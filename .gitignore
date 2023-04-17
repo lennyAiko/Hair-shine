@@ -4,3 +4,4 @@ account/migrations
 config/__pycache__
 account/__pycache__
 store/__pycache__
+db.sqlite3
