@@ -10,7 +10,8 @@ from . import views
 urlpatterns = [
 
     re_path(r'^register/', views.register_user, name='register_user'),
-    # path('user/<str:username>/', views.get_update_delete_user, name='get_update_delete_user'),
+    
+    path('user/<str:username>/', views.get_update_delete_user, name='get_update_delete_user'),
 
     re_path(r'^reset_password/', views.ChangePasswordView.as_view(), name='rest_password'),
     re_path(r'^sign_in/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
