@@ -36,7 +36,7 @@ class Rating(models.Model):
     rate = models.IntegerField(
         default=1,
         validators=[MaxValueValidator(5), MinValueValidator(1)]
-    ) # always set a range
+    )
 
 class Comment(models.Model):
     commenter = models.ForeignKey(User, on_delete=models.CASCADE)
