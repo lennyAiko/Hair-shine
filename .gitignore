@@ -1,0 +1,6 @@
+store/migrations
+account/migrations
+.env
+config/__pycache__
+account/__pycache__
+store/__pycache__
