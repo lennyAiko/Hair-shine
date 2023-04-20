@@ -4,28 +4,35 @@ from rest_framework.permissions import IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
 
-from ..serializers import SubCategorySerializer
+from ..serializers import PostSubCategorySerializer, GetSubCategorySerializer
 from ..models import SubCategory, Category
 
-@swagger_auto_schema(methods=['post'], req=SubCategorySerializer)
+import json
+
+@swagger_auto_schema(methods=['post'], request_body=PostSubCategorySerializer)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def create_get(req):
-
-    # try:
-    #     category = Category.objects.get(id=id)
-    # except Category.DoesNotExist:
-    #     return Response(status=404)
+def create(req):
 
     if req.method == "POST":
         
-        serializer = SubCategorySerializer(data=req.data)
+        serializer = PostSubCategorySerializer(data=req.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
         return Response(serializer.data, 201)
-    
-    # if req.method == "GET":
-    #     query = SubCategory.objects.all(category=category)
-    #     serializer = SubCategory(query, many=True)
-    #     return Response(serializer.data, 200)
+
+@swagger_auto_schema(method='get')
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_subcategories(req, id):
+
+    try:
+        category = Category.objects.get(id=id)
+    except Category.DoesNotExist:
+        return Response(status=404)
+
+    query = SubCategory.objects.filter(category=category.id)
+    serializer = GetSubCategorySerializer(query, many=True)
+
+    return Response(serializer.data, 200)

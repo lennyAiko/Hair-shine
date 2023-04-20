@@ -1,13 +1,19 @@
 from django.urls import path, re_path
 
-from .views import category, sub_category
+from .views import category, sub_category, product
 
 urlpatterns = [
 
-    path('categories/', category.create_get, name='categories'),
-    path('categories/<int:id>', category.get_update_delete, name='categories'),
+    # categories
+    path('categories/', category.create_get),
+    path('categories/<int:id>/', category.get_update_delete),
+    path('categories/<int:id>/subs', category.get_subs),
 
-    path('sub_categories/', sub_category.create_get, name='sub_categories'),
-    # path('sub_categories/<int:id>', sub_category.create_get, name='sub_categories'),
+    # sub categories
+    path('sub_categories/', sub_category.create),
+    path('sub_categories/<int:id>', sub_category.get_subcategories),
     # path('sub_categories/<int:id>', category.get_update_delete, name='categories'),
+
+    # products
+    path('products/', product.create_get),
 ]
