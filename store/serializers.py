@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
-from .models import Category, SubCategory, Product, Rating, Comment
+from .models import Category, SubCategory, Product, Comment
 
 # create category
 class CategorySerializer(ModelSerializer):
@@ -17,17 +17,26 @@ class PostSubCategorySerializer(ModelSerializer):
 
 # get sub categories and the category they belong
 class GetSubCategorySerializer(ModelSerializer):
-    category = CategorySerializer()
     class Meta:
         model = SubCategory
         fields = ('name', 'category')
 
 # get sub categories of a category
-class GetCategorySubSerializer(serializers.Serializer):
-    name = PostSubCategorySerializer()
+class GetCategorySubSerializer(ModelSerializer):
+    category_name = serializers.ReadOnlyField()
+    class Meta:
+        model = SubCategory
+        fields = ('name', 'category_name')
 
 # create products
 class CreateProductSerializer(ModelSerializer):
     class Meta:
         model = Product
         exclude = ['views']
+
+# get products under a particular sub category
+class SubProductSerializer(ModelSerializer):
+    product = CreateProductSerializer()
+    class Meta:
+        model = SubCategory
+        fields = ('name', 'product')

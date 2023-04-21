@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 
 from ..serializers import CategorySerializer, GetCategorySubSerializer
-from ..models import Category
+from ..models import Category, SubCategory
 
 # Create your views here.
 
@@ -37,7 +37,7 @@ def get_subs(req, id):
     except Category.DoesNotExist:
         return Response(status=404)
     
-    query = category.sub_category.all()
+    query = SubCategory.objects.filter(category=id)
     serializer = GetCategorySubSerializer(query, many=True)
 
     return Response(serializer.data, 200)

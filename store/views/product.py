@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 
 from ..serializers import CreateProductSerializer
-from ..models import Product, SubCategory
+from ..models import Product
 
 @swagger_auto_schema(methods=['post', 'get'], query_serializer=CreateProductSerializer)
 @api_view(['POST', 'GET'])
@@ -24,3 +24,29 @@ def create_get(req):
         serializer = CreateProductSerializer(query, many=True)
         
         return Response(serializer.data, 200)
+    
+@swagger_auto_schema(methods=['get', 'put', 'delete'])
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def get_update_delete(req, id):
+    try:
+        product = Product.objects.get(id=id)
+    except Product.DoesNotExist:
+        return Response(status=404)
+    
+    if req.method == 'GET':
+        product_serializer = CreateProductSerializer(product, many=False)
+        return Response(product_serializer.data)
+    
+    if req.method == 'DELETE':
+        product.delete()
+        return Response(status=204)
+         
+    if req.method == 'PUT':
+        serializer = CreateProductSerializer(product, data=req.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=202)
+        
+        return Response(serializer.errors, status=400)
