@@ -6,6 +6,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 from ..serializers import CategorySerializer, GetCategorySubSerializer
 from ..models import Category, SubCategory
+from ..utils import Actions
 
 # Create your views here.
 
@@ -15,29 +16,23 @@ from ..models import Category, SubCategory
 def create_get(req):
 
     if req.method == "POST":
-
-        serializer = CategorySerializer(data=req.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, 201)
+        data, status = Actions.create(serializer=CategorySerializer, data=req.data)
     
     if req.method == "GET":
-        query = Category.objects.all()
-        serializer = CategorySerializer(query, many=True)
-        
-        return Response(serializer.data, 200)
+        data, status = Actions.get(serializer=CategorySerializer, model=Category)
+
+    return Response(data, status)
 
 @swagger_auto_schema(method='get')
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_subs(req, id):
+def get_subs(req, index):
     try:
-        category = Category.objects.get(id=id)
+        category = Category.objects.get(id=index)
     except Category.DoesNotExist:
         return Response(status=404)
     
-    query = SubCategory.objects.filter(category=id)
+    query = SubCategory.objects.filter(category=index)
     serializer = GetCategorySubSerializer(query, many=True)
 
     return Response(serializer.data, 200)
@@ -46,25 +41,15 @@ def get_subs(req, id):
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
-def get_update_delete(req, id):
-    try:
-        category = Category.objects.get(id=id)
-    except Category.DoesNotExist:
-        return Response(status=404)
+def get_update_delete(req, index):
     
     if req.method == 'GET':
-        category_serializer = CategorySerializer(category, many=False)
-        return Response(category_serializer.data)
+        data, status = Actions.get_single(serializer=CategorySerializer, model=Category, index=index)
     
     if req.method == 'DELETE':
-        category.delete()
-        return Response(status=204)
+        data, status = Actions.delete(model=Category, index=index)
          
     if req.method == 'PUT':
-        serializer = CategorySerializer(category, data=req.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=202)
-        
-        return Response(serializer.errors, status=400)
+        data, status = Actions.update(serializer=CategorySerializer, model=Category, index=index, data=req.data)
+    
+    return Response(data, status)

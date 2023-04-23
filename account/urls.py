@@ -9,7 +9,7 @@ from . import views
 
 urlpatterns = [
 
-    re_path(r'^register/', views.register_user, name='register_user'),
+    path('register/', views.register_user, name='register_user'),
     
     path('user/<str:username>/', views.get_update_delete_user, name='get_update_delete_user'),
 

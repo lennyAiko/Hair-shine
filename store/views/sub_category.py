@@ -6,6 +6,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 from ..serializers import PostSubCategorySerializer, GetSubCategorySerializer, SubProductSerializer
 from ..models import SubCategory, Product
+from ..utils import Actions
 
 @swagger_auto_schema(methods=['post', 'get'], request_body=PostSubCategorySerializer)
 @api_view(['POST', 'GET'])
@@ -13,18 +14,12 @@ from ..models import SubCategory, Product
 def create_get(req):
 
     if req.method == "POST":
-        
-        serializer = PostSubCategorySerializer(data=req.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, 201)
+        data, status = Actions.create(serializer=PostSubCategorySerializer, data=req.data)
     
     if req.method == "GET":
-        query = SubCategory.objects.all()
-        serializer = GetSubCategorySerializer(query, many=True)
-        
-        return Response(serializer.data, 200)
+        data, status = Actions.get(serializer=GetSubCategorySerializer, model=SubCategory)
+
+    return Response(data, status)
 
 @swagger_auto_schema(method='get')
 @api_view(['GET'])
@@ -43,26 +38,15 @@ def get_products(req, id):
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
-def get_update_delete(req, id):
+def get_update_delete(req, index):
 
-    try:
-        sub_category = SubCategory.objects.get(id=id)
-    except SubCategory.DoesNotExist:
-        return Response(status=404)
-    
     if req.method == 'GET':
-        sub_category_serializer = GetSubCategorySerializer(sub_category, many=False)
-        return Response(sub_category_serializer.data)
+        data, status = Actions.get_single(serializer=GetSubCategorySerializer, model=SubCategory, index=index)
     
     if req.method == 'DELETE':
-        sub_category.delete()
-        return Response(status=204)
+        data, status = Actions.delete(model=SubCategory, index=index)
          
     if req.method == 'PUT':
-        serializer = PostSubCategorySerializer(sub_category, data=req.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=202)
-        
-        return Response(serializer.errors, status=400)
+        data, status = Actions.update(serializer=PostSubCategorySerializer, model=SubCategory, index=index, data=req.data)
+    
+    return Response(data, status)
