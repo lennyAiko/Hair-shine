@@ -40,7 +40,7 @@ class SubProductSerializer(ModelSerializer):
     class Meta:
         model = Product
         fields = ('id', 'name', 'actual_price', 'sales_price', 'first_description', 'second_description', 
-                  'sub_category_name', 'product_img')
+                  'sub_category_name', 'date_added', 'product_img')
 
 # create comments
 class CommentSerializer(ModelSerializer):

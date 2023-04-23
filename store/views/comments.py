@@ -18,6 +18,10 @@ def create_get(req):
     
     if req.method == "GET":
         data, status = Actions.get(serializer=CommentSerializer, model=Comment)
+    
+    data = {
+        "data": data
+    }
 
     return Response(data, status)
     
@@ -34,5 +38,9 @@ def get_update_delete(req, index):
          
     if req.method == 'PUT':
         data, status = Actions.update(serializer=CommentSerializer, model=Comment, index=index, data=req.data)
+    
+    data = {
+        "data": data
+    }
     
     return Response(data, status)

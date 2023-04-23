@@ -8,6 +8,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 def upload_to(instance, filename):
     return 'images/{filename}'.format(filename=filename)
 
+def default_policy():
+    return Category.objects.get(name=default_policy).pk
 
 class Category(models.Model):
     name = models.CharField(max_length=150, unique=True)
@@ -19,7 +21,7 @@ class Category(models.Model):
 
 class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_DEFAULT, 
-                                 related_name='sub_category', default="Uncategorized")
+                                 related_name='sub_category', default=default_policy)
     name = models.CharField(max_length=150, unique=True)
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -31,16 +33,17 @@ class SubCategory(models.Model):
     def category_name(self):
         return self.category.name
     
-    
 class Product(models.Model):
     name = models.CharField(max_length=150, unique=True)
     actual_price = models.IntegerField(default=0)
     sales_price = models.IntegerField(null=True, blank=True, default=0)
     first_description = models.TextField()
     second_description = models.TextField()
-    sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_DEFAULT, related_name='product', default="Uncategorized")
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_DEFAULT, related_name='product', default=default_policy)
     views = models.IntegerField(blank=True, null=True, default=0)
     product_img = models.ImageField(upload_to=upload_to, blank=True, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return self.name
@@ -51,19 +54,27 @@ class Product(models.Model):
 
     # get rating
     @property
-    def get_rate(self):
-        return self.comment.rate
+    def get_rating(self):
+        rating = 0
+        count = 0
+        for i in self.comment:
+            rating += i.rate
+            count += 1
+        rating = rating / count
+        return rating
 
     # get comments
 
 class Comment(models.Model):
-    commenter = models.ForeignKey(User, on_delete=models.SET_DEFAULT, related_name='comment', default="Uncategorized")
-    product = models.ForeignKey(Product, on_delete=models.SET_DEFAULT, related_name='comment', default="Uncategorized")
+    commenter = models.ForeignKey(User, on_delete=models.SET_DEFAULT, related_name='comment', default=default_policy)
+    product = models.ForeignKey(Product, on_delete=models.SET_DEFAULT, related_name='comment', default=default_policy)
     comment = models.TextField()
     rate = models.IntegerField(
         default=1,
         validators=[MaxValueValidator(5), MinValueValidator(1)]
     )
+    date_added = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return self.comment[:20]

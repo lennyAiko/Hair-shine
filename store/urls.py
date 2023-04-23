@@ -18,7 +18,9 @@ urlpatterns = [
     path('products/', product.create_get),
     path('products/<int:index>/', product.get_update_delete),
     path('products/<int:index>/comments/', product.get_comments),
-    
+    path('products/new/', product.new_products),
+    path('products/trending/', product.trending_products),
+
     #comments
     path('comments/', comments.create_get),
     path('comments/<int:index>/', comments.get_update_delete),
