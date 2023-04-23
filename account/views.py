@@ -26,7 +26,7 @@ def register_user(req):
 
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def get_update_delete_user(req, username):
 
     try:

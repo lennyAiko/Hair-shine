@@ -19,24 +19,37 @@ class PostSubCategorySerializer(ModelSerializer):
 class GetSubCategorySerializer(ModelSerializer):
     class Meta:
         model = SubCategory
-        fields = ('name', 'category')
+        fields = '__all__'
 
 # get sub categories of a category
 class GetCategorySubSerializer(ModelSerializer):
     category_name = serializers.ReadOnlyField()
     class Meta:
         model = SubCategory
-        fields = ('name', 'category_name')
+        fields = ('id', 'name', 'category_name')
 
 # create products
 class CreateProductSerializer(ModelSerializer):
     class Meta:
         model = Product
-        exclude = ['views']
+        fields = '__all__'
 
 # get products under a particular sub category
 class SubProductSerializer(ModelSerializer):
-    product = CreateProductSerializer()
+    sub_category_name = serializers.ReadOnlyField()
     class Meta:
-        model = SubCategory
-        fields = ('name', 'product')
+        model = Product
+        fields = ('id', 'name', 'actual_price', 'sales_price', 'first_description', 'second_description', 
+                  'sub_category_name', 'product_img')
+
+# create comments
+class CommentSerializer(ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+class ProductCommentSerializer(ModelSerializer):
+    product_name = serializers.ReadOnlyField()
+    class Meta:
+        model = Comment
+        fields = ('id', 'comment', 'rate', 'product_name')

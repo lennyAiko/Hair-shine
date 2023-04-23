@@ -4,8 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
 
-from ..serializers import CreateProductSerializer
-from ..models import Product
+from ..serializers import CreateProductSerializer, ProductCommentSerializer
+from ..models import Product, Comment
 
 @swagger_auto_schema(methods=['post', 'get'], query_serializer=CreateProductSerializer)
 @api_view(['POST', 'GET'])
@@ -36,6 +36,11 @@ def get_update_delete(req, id):
     
     if req.method == 'GET':
         product_serializer = CreateProductSerializer(product, many=False)
+
+        # increase views
+        product.views += 1
+        product.save()
+
         return Response(product_serializer.data)
     
     if req.method == 'DELETE':
@@ -50,3 +55,17 @@ def get_update_delete(req, id):
             return Response(serializer.data, status=202)
         
         return Response(serializer.errors, status=400)
+    
+@swagger_auto_schema(method='get')
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_comments(req, id):
+    try:
+        product = Product.objects.get(id=id)
+    except Product.DoesNotExist:
+        return Response(status=404)
+    
+    query = Comment.objects.filter(product=id)
+    serializer = ProductCommentSerializer(query, many=True)
+
+    return Response(serializer.data, 200)
