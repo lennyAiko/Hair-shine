@@ -31,12 +31,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000',
-    'http://localhost:4000'
-]
-
+# CORS_ORIGIN_ALLOW_ALL = False
+# CORS_ORIGIN_WHITELIST = [
+#     'http://localhost:3000',
+#     'http://localhost:4000'
+# ]
 
 # Application definition
 
@@ -51,7 +50,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'rest_framework_simplejwt',
-    'corsheaders',
+    # 'corsheaders',
 
     'account',
     'store'
@@ -67,7 +66,9 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser',
         'rest_framework.parsers.JSONParser',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
 }
 
 SIMPLE_JWT = {

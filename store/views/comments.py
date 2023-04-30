@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
 
-from ..serializers import CommentSerializer
+from ..serializers import CommentSerializer, GetCommentSerializer
 from ..models import Product, Comment
 from ..utils import Actions
 
@@ -14,10 +14,11 @@ from ..utils import Actions
 def create_get(req):
 
     if req.method == "POST":
+        req.data['commenter'] = req.user.id
         data, status = Actions.create(serializer=CommentSerializer, data=req.data)
     
     if req.method == "GET":
-        data, status = Actions.get(serializer=CommentSerializer, model=Comment)
+        data, status = Actions.get(serializer=GetCommentSerializer, model=Comment) 
     
     data = {
         "data": data
@@ -31,13 +32,13 @@ def create_get(req):
 def get_update_delete(req, index):
 
     if req.method == 'GET':
-        data, status = Actions.get_single(serializer=CommentSerializer, model=Comment, index=index)
+        data, status = Actions.get_single(serializer=GetCommentSerializer, model=Comment, index=index)
     
     if req.method == 'DELETE':
         data, status = Actions.delete(model=Comment, index=index)
          
     if req.method == 'PUT':
-        data, status = Actions.update(serializer=CommentSerializer, model=Comment, index=index, data=req.data)
+        data, status = Actions.update(serializer=GetCommentSerializer, model=Comment, index=index, data=req.data)
     
     data = {
         "data": data

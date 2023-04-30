@@ -2,8 +2,7 @@ from django.db.models import Q
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from drf_yasg.utils import swagger_auto_schema
 
 from ..serializers import CreateProductSerializer, ProductCommentSerializer
@@ -12,7 +11,7 @@ from ..utils import Actions, Filterer
 
 @swagger_auto_schema(methods=['post', 'get'], query_serializer=CreateProductSerializer)
 @api_view(['POST', 'GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def create_get(req):
 
     OPTIONS = ['products', 'categories', 'sub_categories']
@@ -39,7 +38,7 @@ def create_get(req):
     
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def get_update_delete(req, index):
 
     if req.method == 'GET':
@@ -59,14 +58,14 @@ def get_update_delete(req, index):
 
 @swagger_auto_schema(method='get')
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_comments(req, id):
+@permission_classes([IsAuthenticatedOrReadOnly])
+def get_comments(req, index):
     try:
-        product = Product.objects.get(id=id)
+        product = Product.objects.get(id=index)
     except Product.DoesNotExist:
         return Response(status=404)
     
-    query = Comment.objects.filter(product=id)
+    query = Comment.objects.filter(product=product.id)
     serializer = ProductCommentSerializer(query, many=True)
 
     data = {
@@ -78,7 +77,7 @@ def get_comments(req, id):
 
 @swagger_auto_schema(method='get')
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def new_products(req):
 
     data, status = Filterer(model=Product, serializer=CreateProductSerializer, param='-date_added')
@@ -91,7 +90,7 @@ def new_products(req):
 
 @swagger_auto_schema(method='get')
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def trending_products(req):
 
     data, status = Filterer(model=Product, serializer=CreateProductSerializer, param='-views')

@@ -9,7 +9,7 @@ def upload_to(instance, filename):
     return 'images/{filename}'.format(filename=filename)
 
 def default_policy():
-    return Category.objects.get(name=default_policy).pk
+    return Category.objects.get(name="Uncategorized").pk
 
 class Category(models.Model):
     name = models.CharField(max_length=150, unique=True)
@@ -36,7 +36,7 @@ class SubCategory(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=150, unique=True)
     actual_price = models.IntegerField(default=0)
-    sales_price = models.IntegerField(null=True, blank=True, default=0)
+    sales_price = models.IntegerField(null=True, blank=True, default=0) #might go off
     first_description = models.TextField()
     second_description = models.TextField()
     sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_DEFAULT, related_name='product', default=default_policy)
@@ -82,3 +82,58 @@ class Comment(models.Model):
     @property
     def product_name(self):
         return self.product.name
+    
+class Cart(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
+    date_added = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.user.username}'s cart"
+
+class ProductItem(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_item')
+    quantity = models.IntegerField()
+    amount = models.IntegerField(null=True, blank=True)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='product_item')
+    date_added = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.cart.user.username}'s product item - {self.product.name}"
+
+class Favourite(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='favourite')
+    date_added = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.user.username}'s favourite"
+
+class FavItem(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product')
+    favourite = models.ForeignKey(Favourite, on_delete=models.CASCADE, related_name='favourite')
+    date_added = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.favourite.user.username}'s favourite item"
+
+class Order(models.Model):
+    STATUS = (
+        ('received', 'Order Placed'),
+        ('delivery', 'Out for Delivery'),
+        ('delivered', 'Order Delivered')
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='order')
+    address = models.TextField()
+    state = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
+    method = models.CharField(max_length=40)
+    status = models.CharField(choices=STATUS, max_length=32, default='received')
+    date_added = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.user.username}'s order"

@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 
-from .views import category, sub_category, product, comments
+from .views import category, sub_category, product, comments, cart, order
 
 urlpatterns = [
 
@@ -24,5 +24,16 @@ urlpatterns = [
     #comments
     path('comments/', comments.create_get),
     path('comments/<int:index>/', comments.get_update_delete),
+
+    #cart
+    path('cart/', cart.get),
+    path('cart/items/', cart.add_item),
+    path('cart/items/<int:index>/', cart.get_update_delete_item),
+    path('cart/empty/', cart.empty_cart),
+
+    #order
+    path('orders/all/', order.get_all),
+    path('orders/', order.create_get),
+    path('orders/<int:index>/', order.get_update_delete_item),
 
 ]

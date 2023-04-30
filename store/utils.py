@@ -33,7 +33,7 @@ class Actions():
 
         return (serializer.data, 201)
     
-    def get(serializer, model, query, spy, selection):
+    def get(serializer, model, query=None, spy=None, selection=None):
         
         if query == None:
             query = model.objects.all()
@@ -54,7 +54,7 @@ class Actions():
         
         return (serializer.data, 200)
     
-    def get_single(serializer, model, index, comments=None):
+    def get_single(serializer, model, index):
         instance = Actions.verify(model, index)
         if instance == False:
             return {"message": "Object not found"}, 404
@@ -83,10 +83,16 @@ class Actions():
         instance.delete()
         return {"message": "Successfully deleted"}, 204
     
-    def update(serializer, model, index, data):
+    def update(serializer, model, index, data, item=False):
         instance = Actions.verify(model, index)
         if instance == False:
             return {"message": "Object not found"}, 404
+        
+        if item:
+            data = {
+                "quantity": data['quantity'],
+                "amount": data['quantity'] * instance.product.actual_price
+            }
         
         serializer = serializer(instance, data=data)
 

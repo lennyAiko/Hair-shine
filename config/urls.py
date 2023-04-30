@@ -41,6 +41,8 @@ urlpatterns = [
     # admin
     re_path(r'^admin/', admin.site.urls),
 
+    path('api-auth/', include('rest_framework.urls')),
+
     # custom apps
     re_path(r'^accounts/', include('account.urls')),
     re_path(r'^store/', include('store.urls')),
