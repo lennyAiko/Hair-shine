@@ -32,7 +32,7 @@ def get_update_delete_user(req, username):
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
-        return Response(404)
+        return Response("Does not exist", 404)
     
     if req.method == 'GET':
         profile_serializer = ProfileSerializer(user.profile)
@@ -47,9 +47,14 @@ def get_update_delete_user(req, username):
         return Response(204)
          
     if req.method == 'PUT':
-        user.profile.phone = req.data['phone']
         user.profile.location = req.data['location']
-        serializer = UserSerializer(user, data=req.data['user'])
+
+        data = {
+            "username": req.user.username,
+            "email": req.data['email']
+        }
+
+        serializer = UserSerializer(user, data=data)
 
         if serializer.is_valid():
             serializer.save()
