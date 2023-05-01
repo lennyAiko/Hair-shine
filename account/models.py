@@ -12,7 +12,8 @@ class Profile(models.Model):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     phone = models.CharField(max_length=11, blank=True, null=True)
-    location = models.CharField(max_length=30, blank=True, null=True)
+    # isVerified = models.BooleanField(default=False)
+    location = models.CharField(max_length=30, blank=True, null=True, default="")
     date_added = models.DateTimeField(auto_now_add=True)
     
     def __str__(self) -> str:

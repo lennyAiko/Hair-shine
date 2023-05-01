@@ -48,6 +48,7 @@ def get_update_delete_user(req, username):
          
     if req.method == 'PUT':
         user.profile.phone = req.data['phone']
+        user.profile.location = req.data['location']
         serializer = UserSerializer(user, data=req.data['user'])
 
         if serializer.is_valid():
