@@ -76,8 +76,6 @@ def get_update_delete_item(req, index):
     
     return Response(data, status)
 
-#empty cart
-# get user cart then run items.objects.all().delete()
 @swagger_auto_schema(methods=['get'], request_body=CartSerializer)
 @api_view(['GET'])
 @permission_classes([IsAuthenticatedOrReadOnly])

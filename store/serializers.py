@@ -79,6 +79,13 @@ class CartSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'product_item')
 
 class FavItemSerializer(ModelSerializer):
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), many=False)
+    favourite = serializers.PrimaryKeyRelatedField(queryset=Favourite.objects.all(), many=False)
+    class Meta:
+        model = FavItem
+        fields = ('id', 'product', 'favourite')
+
+class GetFavItemSerializer(ModelSerializer):
     product = serializers.ReadOnlyField(source='product.name')
     favourite = serializers.ReadOnlyField(source='favourite.name')
     class Meta:
@@ -86,11 +93,11 @@ class FavItemSerializer(ModelSerializer):
         fields = ('id', 'product', 'favourite')
 
 class FavouriteSerializer(ModelSerializer):
-    item = FavItemSerializer(many=True, read_only=True)
+    favourite = GetFavItemSerializer(many=True, read_only=True)
     user = serializers.ReadOnlyField(source='user.username')
     class Meta:
         model = Favourite
-        fields = ('id', 'user', 'item')
+        fields = ('id', 'user', 'favourite')
 
 # create order
 class OrderSerializer(ModelSerializer):

@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 
-from .views import category, sub_category, product, comments, cart, order
+from .views import category, sub_category, product, comments, cart, order, favourites
 
 urlpatterns = [
 
@@ -35,5 +35,10 @@ urlpatterns = [
     path('orders/all/', order.get_all),
     path('orders/', order.create_get),
     path('orders/<int:index>/', order.get_update_delete_item),
+
+    #favorites
+    path('favourite/', favourites.get),
+    path('favourite/items/', favourites.add_item),
+    path('favourite/items/<int:index>/', favourites.get_update_delete_item)
 
 ]
