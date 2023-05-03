@@ -28,6 +28,7 @@ def get(req):
     data, status = serializer.data, 200
 
     data = {
+        "status": status,
         "data": data
     }
 
@@ -48,6 +49,7 @@ def add_item(req):
     data, status = Actions.create(serializer=FavItemSerializer, data=req.data)
 
     data = {
+        "status": status,
         "data": data
     }
 
@@ -68,6 +70,7 @@ def get_update_delete_item(req, index):
         data, status = Actions.update(serializer=GetFavItemSerializer, model=FavItem, index=index, data=req.data, item=True)
 
     data = {
+        "status": status,
         "data": data
     }
     

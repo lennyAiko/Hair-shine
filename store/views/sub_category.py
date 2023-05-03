@@ -32,8 +32,8 @@ def create_get(req):
         data, status = Actions.get(serializer=GetCategorySubSerializer, model=SubCategory, 
                                    query=query, selection=selection, spy=Q)
 
-
     data = {
+        "status": status,
         "data": data
     }
 
@@ -52,6 +52,7 @@ def get_products(req, index):
     serializer = CreateProductSerializer(query, many=True)
 
     data = {
+        "status": 200,
         "data": serializer.data
     }
 
@@ -72,6 +73,7 @@ def get_update_delete(req, index):
         data, status = Actions.update(serializer=PostSubCategorySerializer, model=SubCategory, index=index, data=req.data)
 
     data = {
+        "status": status,
         "data": data
     }
     

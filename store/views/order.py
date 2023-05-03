@@ -24,6 +24,7 @@ def get_all(req):
     data, status = Actions.get(GetOrderSerializer, Order)
 
     data = {
+        "status": status,
         "data": data
     }
 
@@ -40,6 +41,7 @@ def create_get(req):
 
         data, status = serializer.data, 200
         data = {
+            "status": status,
             "data": data
         }
 
@@ -52,6 +54,7 @@ def create_get(req):
         data, status = Actions.create(serializer=OrderSerializer, data=req.data)
 
         data = {
+            "status": status,
             "data": data
         }
 
@@ -72,6 +75,7 @@ def get_update_delete_item(req, index):
         data, status = Actions.update(serializer=GetOrderSerializer, model=Order, index=index, data=req.data)
 
     data = {
+        "status": status,
         "data": data
     }
     

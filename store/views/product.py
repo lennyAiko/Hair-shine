@@ -31,6 +31,7 @@ def create_get(req):
                                    query=query, selection=selection, spy=Q)
 
     data = {
+        "status": status,
         "data": data
     }
 
@@ -51,6 +52,7 @@ def get_update_delete(req, index):
         data, status = Actions.update(serializer=CreateProductSerializer, model=Product, index=index, data=req.data)
 
     data = {
+        "status": status,
         "data": data
     }
     
@@ -69,6 +71,7 @@ def get_comments(req, index):
     serializer = ProductCommentSerializer(query, many=True)
 
     data = {
+        "status": 200,
         "data": serializer.data
     }
 
@@ -83,6 +86,7 @@ def new_products(req):
     data, status = Filterer(model=Product, serializer=CreateProductSerializer, param='-date_added')
 
     data = {
+        "status": status,
         "data": data
     }
 
@@ -96,6 +100,7 @@ def trending_products(req):
     data, status = Filterer(model=Product, serializer=CreateProductSerializer, param='-views')
 
     data = {
+        "status": status,
         "data": data
     }
 

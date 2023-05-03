@@ -22,7 +22,7 @@ def register_user(req):
         
         serializer.save()
         
-        return Response({"message": "proceed to login"}, 201)
+        return Response({"status": 200, "message": "proceed to login"}, 201)
 
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -32,11 +32,16 @@ def get_update_delete_user(req, username):
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
-        return Response("Does not exist", 404)
+        data = {
+            "status": 404,
+            "message": "Does not exist"
+        }
+        return Response(data, 404)
     
     if req.method == 'GET':
         profile_serializer = ProfileSerializer(user.profile)
         data = {
+            "status": 200,
             "data": profile_serializer.data
         }
 
@@ -44,7 +49,11 @@ def get_update_delete_user(req, username):
     
     if req.method == 'DELETE':
         user.delete()
-        return Response(204)
+        data = {
+            "status": 204,
+            "message": "Delete successful"
+        }
+        return Response(data, 204)
          
     if req.method == 'PUT':
         user.profile.location = req.data['location']
@@ -61,6 +70,7 @@ def get_update_delete_user(req, username):
             user.profile.save()
             serializer = ProfileSerializer(user.profile)
             data = {
+                "status": 202,
                 "data": serializer.data
             }
 

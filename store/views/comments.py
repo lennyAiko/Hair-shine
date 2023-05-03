@@ -21,6 +21,7 @@ def create_get(req):
         data, status = Actions.get(serializer=GetCommentSerializer, model=Comment) 
     
     data = {
+        "status": status,
         "data": data
     }
 
@@ -41,6 +42,7 @@ def get_update_delete(req, index):
         data, status = Actions.update(serializer=GetCommentSerializer, model=Comment, index=index, data=req.data)
     
     data = {
+        "status": status,
         "data": data
     }
     

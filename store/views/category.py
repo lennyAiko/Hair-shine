@@ -34,6 +34,7 @@ def create_get(req):
                                    query=query, selection=selection, spy=Q)
 
     data = {
+        "status": status,
         "data": data
     }
 
@@ -52,6 +53,7 @@ def get_subs(req, index):
     serializer = GetCategorySubSerializer(query, many=True)
 
     data = {
+        "status": 200,
         "data": serializer.data
     }
 
@@ -72,6 +74,7 @@ def get_update_delete(req, index):
         data, status = Actions.update(serializer=CategorySerializer, model=Category, index=index, data=req.data)
     
     data = {
+        "status": status,
         "data": data
     }
 
