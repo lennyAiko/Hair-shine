@@ -31,11 +31,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-# CORS_ORIGIN_ALLOW_ALL = False
-# CORS_ORIGIN_WHITELIST = [
-#     'http://localhost:3000',
-#     'http://localhost:4000'
-# ]
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:4000'
+]
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",
+    "origin",
+    "user-agent",
+]
 
 # Application definition
 
@@ -50,7 +58,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'rest_framework_simplejwt',
-    # 'corsheaders',
+    'corsheaders',
 
     'account',
     'store'
