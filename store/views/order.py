@@ -1,11 +1,11 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from drf_yasg.utils import swagger_auto_schema
 
 from ..serializers import OrderSerializer, GetOrderSerializer
 from ..models import Order
-from ..utils import Actions
+from ..utils import Actions, ReadOnly
 
 def create(user):
     try:
@@ -18,7 +18,7 @@ def create(user):
 
 @swagger_auto_schema(methods=['get'], request_body=OrderSerializer)
 @api_view(['GET'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAdminUser])
 def get_all(req):
 
     data, status = Actions.get(GetOrderSerializer, Order)
@@ -32,7 +32,7 @@ def get_all(req):
 
 @swagger_auto_schema(methods=['get', 'post'], request_body=OrderSerializer)
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def create_get(req):
 
     if req.method == "GET":
@@ -62,7 +62,7 @@ def create_get(req):
     
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def get_update_delete_item(req, index):
 
     if req.method == 'GET':

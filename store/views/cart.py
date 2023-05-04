@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 
 from ..serializers import CartSerializer, ProductItemSerializer, GetProductItemSerializer
@@ -18,7 +18,7 @@ def create(user):
 
 @swagger_auto_schema(methods=['get'], request_body=CartSerializer)
 @api_view(['GET'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def get(req):
 
     query = create(req.user)
@@ -36,11 +36,16 @@ def get(req):
 
 @swagger_auto_schema(methods=['post'], request_body=ProductItemSerializer)
 @api_view(['POST'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def add_item(req):
 
     if ProductItem.objects.filter(product=req.data['product']).count() == 1:
-        return Response("Already exists", 400)
+        data = {
+            "status": 400,
+            "message": "Already exists"
+        }   
+
+        return Response(data, 400)
 
     query = create(req.user)
 
@@ -56,11 +61,11 @@ def add_item(req):
         "data": data
     }
 
-    return Response("Successful", status)
+    return Response(data, status)
 
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def get_update_delete_item(req, index):
 
     if req.method == 'GET':
@@ -81,7 +86,7 @@ def get_update_delete_item(req, index):
 
 @swagger_auto_schema(methods=['get'], request_body=CartSerializer)
 @api_view(['GET'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def empty_cart(req):
 
     req.user.cart.product_item.all().delete()
@@ -91,4 +96,4 @@ def empty_cart(req):
         "message": "Cart is empty"
     }
 
-    return Response(200)
+    return Response(data, 200)

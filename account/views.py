@@ -22,7 +22,7 @@ def register_user(req):
         
         serializer.save()
         
-        return Response({"status": 200, "message": "proceed to login"}, 201)
+        return Response({"status": 201, "message": "proceed to login"}, 201)
 
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])

@@ -15,6 +15,7 @@ urlpatterns = [
     path('sub_categories/<int:index>/', sub_category.get_update_delete),
 
     # products
+    # path('products/', product.ProductList.as_view()),
     path('products/', product.create_get),
     path('products/<int:index>/', product.get_update_delete),
     path('products/<int:index>/comments/', product.get_comments),

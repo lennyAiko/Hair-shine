@@ -1,20 +1,23 @@
 from django.db.models import Q
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAdminUser
 from drf_yasg.utils import swagger_auto_schema
 
 from ..serializers import CreateProductSerializer, ProductCommentSerializer
 from ..models import Product, Comment
-from ..utils import Actions, Filterer
+from ..utils import Actions, Filterer, ReadOnly
 
 @swagger_auto_schema(methods=['post', 'get'], query_serializer=CreateProductSerializer)
+@cache_page(60*60*2)
 @api_view(['POST', 'GET'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAdminUser|ReadOnly])
 def create_get(req):
 
-    OPTIONS = ['products', 'categories', 'sub_categories']
+    OPTIONS = ['products']
 
     if req.method == "POST":
         data, status = Actions.create(serializer=CreateProductSerializer, data=req.data)
@@ -25,10 +28,14 @@ def create_get(req):
 
         if selection != None:
             if selection not in OPTIONS:
-                return Response({'message': 'Invalid search selection'}, 400)
+                data = {
+                    "status": 400,
+                    "message": "Invalid search selection"
+                }
+                return Response(data, 400)
 
         data, status = Actions.get(serializer=CreateProductSerializer, model=Product, 
-                                   query=query, selection=selection, spy=Q)
+                                   query=query, selection=selection, spy=Q, req=req)
 
     data = {
         "status": status,
@@ -39,7 +46,7 @@ def create_get(req):
     
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAdminUser|ReadOnly])
 def get_update_delete(req, index):
 
     if req.method == 'GET':
@@ -59,13 +66,18 @@ def get_update_delete(req, index):
     return Response(data, status)
 
 @swagger_auto_schema(method='get')
+@cache_page(60*60*2)
 @api_view(['GET'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([ReadOnly])
 def get_comments(req, index):
     try:
         product = Product.objects.get(id=index)
     except Product.DoesNotExist:
-        return Response(status=404)
+        data = {
+            "status": 404,
+            "message": "This product does not exist"
+        }
+        return Response(data, 404)
     
     query = Comment.objects.filter(product=product.id)
     serializer = ProductCommentSerializer(query, many=True)
@@ -79,11 +91,13 @@ def get_comments(req, index):
 
 
 @swagger_auto_schema(method='get')
+@cache_page(60*60*2)
 @api_view(['GET'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([ReadOnly])
 def new_products(req):
 
-    data, status = Filterer(model=Product, serializer=CreateProductSerializer, param='-date_added')
+    data, status = Filterer(model=Product, serializer=CreateProductSerializer, 
+                            param='-date_added', req=req)
 
     data = {
         "status": status,
@@ -93,11 +107,13 @@ def new_products(req):
     return Response(data, status)
 
 @swagger_auto_schema(method='get')
+@cache_page(60*60*2)
 @api_view(['GET'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([ReadOnly])
 def trending_products(req):
 
-    data, status = Filterer(model=Product, serializer=CreateProductSerializer, param='-views')
+    data, status = Filterer(model=Product, serializer=CreateProductSerializer, 
+                            param='-views', req=req)
 
     data = {
         "status": status,

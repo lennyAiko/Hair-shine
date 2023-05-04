@@ -1,5 +1,12 @@
 # holds all repeated functions
 
+from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.pagination import PageNumberPagination
+
+class ReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS
+
 class Actions():
 
     @staticmethod
@@ -24,6 +31,15 @@ class Actions():
         if count > 0:
             rating = rating / count
         return int(rating)
+    
+    @staticmethod
+    def my_paginator(query, req, serializer):
+        paginator = PageNumberPagination()
+        page = paginator.paginate_queryset(query, req)
+
+        serializer = serializer(page, many=True)
+
+        return paginator.get_paginated_response(serializer.data).data
             
 
     def create(data, serializer):
@@ -33,26 +49,29 @@ class Actions():
 
         return (serializer.data, 201)
     
-    def get(serializer, model, query=None, spy=None, selection=None):
+    def get(serializer, model, query=None, spy=None, selection=None, req=None):
         
         if query == None:
-            query = model.objects.all()
-            serializer = serializer(query, many=True)
+            query = model.objects.all().order_by('date_added')
+
+            data = Actions.my_paginator(query, req, serializer)
 
         else:
             if selection == 'products':
                 result = Crawler.search_products(query, model, spy, serializer)
-                serializer = serializer(result, many=True)
+                data = Actions.my_paginator(result, req, serializer)
 
-            if selection == 'categories':
-                result = Crawler.search_categories(query, model, spy, serializer)
-                serializer = serializer(result, many=True)
+            # if selection == 'categories':
+            #     result = Crawler.search_categories(query, model, spy, serializer)
+            #     serializer = serializer(result, many=True)
+            #     # data = serializer.data
 
-            if selection == 'sub_categories':
-                result = Crawler.search_sub_categories(query, model, spy, serializer)
-                serializer = serializer(result, many=True)
+            # if selection == 'sub_categories':
+            #     result = Crawler.search_sub_categories(query, model, spy, serializer)
+            #     serializer = serializer(result, many=True)
+            #     # data = serializer.data
         
-        return (serializer.data, 200)
+        return (data, 200)
     
     def get_single(serializer, model, index):
         instance = Actions.verify(model, index)
@@ -103,11 +122,11 @@ class Actions():
         return serializer.errors, 400
     
 
-def Filterer(model, serializer, param):
+def Filterer(model, serializer, param, req=None):
     query = model.objects.all().order_by(param)
-    serializer = serializer(query, many=True)
+    data = Actions.my_paginator(query, req, serializer)
 
-    return serializer.data, 200
+    return data, 200
 
 class Crawler():
 
