@@ -8,6 +8,8 @@ urlpatterns = [
     path('categories/', category.create_get),
     path('categories/<int:index>/', category.get_update_delete),
     path('categories/<int:index>/subs/', category.get_subs),
+    path('categories/<int:index>/products/', category.get_products),
+    path('categories/<str:index>/products/', category.get_products),
 
     # sub categories
     path('sub_categories/', sub_category.create_get),

@@ -112,3 +112,13 @@ class GetOrderSerializer(ModelSerializer):
     class Meta:
         model = Order
         fields = ('id', 'user', 'address', 'state', 'city', 'method', 'status')
+
+# get all products under a category
+
+class GetCategoryProducts(ModelSerializer):
+
+    sub_category = serializers.PrimaryKeyRelatedField(queryset=SubCategory.objects.all(), many=True)
+
+    class Meta:
+        model = Category
+        fields = ('id', 'name', 'sub_category')

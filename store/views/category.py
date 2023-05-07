@@ -6,8 +6,8 @@ from rest_framework.permissions import IsAdminUser
 
 from drf_yasg.utils import swagger_auto_schema
 
-from ..serializers import CategorySerializer, GetCategorySubSerializer
-from ..models import Category, SubCategory
+from ..serializers import CategorySerializer, GetCategorySubSerializer, GetCategoryProducts, CreateProductSerializer
+from ..models import Category, SubCategory, Product
 from ..utils import Actions, ReadOnly
 
 # Create your views here.
@@ -79,3 +79,36 @@ def get_update_delete(req, index):
     }
 
     return Response(data, status)
+
+@swagger_auto_schema(method='get')
+@api_view(['GET'])
+@permission_classes([IsAdminUser|ReadOnly])
+def get_products(req, index=None):
+    store = []
+
+    try:
+        if type(index) == int:
+            category = Category.objects.get(id=index)
+        if type(index) == str:
+            category = Category.objects.get(name=index)
+    except:
+        data = {
+            "status": 404,
+            "data": "Does not exist"
+        }
+        return Response(data, data['status'])
+
+        
+    serializer = GetCategoryProducts(category, many=False)
+
+    for i in serializer.data['sub_category']:
+        query = Product.objects.filter(sub_category=i)
+        serializer = CreateProductSerializer(query, many=True)
+        store.append(serializer.data)
+
+    data = {
+        "status": 200,
+        "data": store
+    }
+
+    return Response(data, data['status'])
