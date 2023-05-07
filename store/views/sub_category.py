@@ -30,7 +30,7 @@ def create_get(req):
                 return Response({'message': 'Invalid search selection'}, 400)
 
         data, status = Actions.get(serializer=GetCategorySubSerializer, model=SubCategory, 
-                                   query=query, selection=selection, spy=Q)
+                                   query=query, selection=selection, spy=Q, req=req)
 
     data = {
         "status": status,

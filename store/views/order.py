@@ -21,7 +21,7 @@ def create(user):
 @permission_classes([IsAdminUser])
 def get_all(req):
 
-    data, status = Actions.get(GetOrderSerializer, Order)
+    data, status = Actions.get(serializer=GetOrderSerializer, model=Order, req=req)
 
     data = {
         "status": status,

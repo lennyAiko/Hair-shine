@@ -18,7 +18,7 @@ def create_get(req):
         data, status = Actions.create(serializer=CommentSerializer, data=req.data)
     
     if req.method == "GET":
-        data, status = Actions.get(serializer=GetCommentSerializer, model=Comment) 
+        data, status = Actions.get(serializer=GetCommentSerializer, model=Comment, req=req) 
     
     data = {
         "status": status,
