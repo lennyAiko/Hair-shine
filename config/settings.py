@@ -35,6 +35,8 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'http://localhost:3001',
+    'http://localhost:3005',
+    'http://localhost:5173',
     'http://localhost:4000'
 ]
 CORS_ALLOW_HEADERS = [
