@@ -80,6 +80,10 @@ def get_update_delete(req, index):
 
     return Response(data, status)
 
+def adder(data, store):
+    store.append(data)
+    return
+
 @swagger_auto_schema(method='get')
 @api_view(['GET'])
 @permission_classes([IsAdminUser|ReadOnly])
@@ -104,7 +108,8 @@ def get_products(req, index=None):
     for i in serializer.data['sub_category']:
         query = Product.objects.filter(sub_category=i)
         serializer = CreateProductSerializer(query, many=True)
-        store.append(serializer.data)
+        for i in serializer.data:
+            store.append(i)
 
     data = {
         "status": 200,
