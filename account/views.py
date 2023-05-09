@@ -27,10 +27,12 @@ def register_user(req):
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
-def get_update_delete_user(req, username):
+def get_update_delete_user(req):
+
+    role = ""
 
     try:
-        user = User.objects.get(username=username)
+        user = req.user
     except User.DoesNotExist:
         data = {
             "status": 404,
@@ -40,8 +42,15 @@ def get_update_delete_user(req, username):
     
     if req.method == 'GET':
         profile_serializer = ProfileSerializer(user.profile)
+
+        if user.is_superuser: 
+            role = "Admin"
+            print(role)
+        else: role = "Client"
+
         data = {
             "status": 200,
+            "role": role,
             "data": profile_serializer.data
         }
 
@@ -56,11 +65,19 @@ def get_update_delete_user(req, username):
         return Response(data, 204)
          
     if req.method == 'PUT':
-        user.profile.location = req.data['location']
+        try:
+            user.profile.location = req.data['location']
+        except:
+            user.profile.location = user.profile.location
+
+        try:
+            email = req.data['email']
+        except:
+            email = user.email
 
         data = {
             "username": req.user.username,
-            "email": req.data['email']
+            "email": email
         }
 
         serializer = UserSerializer(user, data=data)
