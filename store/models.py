@@ -9,7 +9,31 @@ def upload_to(instance, filename):
     return 'images/{filename}'.format(filename=filename)
 
 def default_policy():
-    return Category.objects.get(name="Uncategorized").pk
+    try:
+        return Category.objects.get(name="Uncategorized").pk
+    except Category.DoesNotExist:
+        try:
+            Category.objects.create(name="Uncategorized")
+        except:
+            pass
+
+def default_sub():
+    try:
+        return SubCategory.objects.get(name="Uncategorized").pk
+    except SubCategory.DoesNotExist:
+        try:
+            SubCategory.objects.create(name="Uncategorized")
+        except:
+            pass
+
+def default_product():
+    try:
+        return Product.objects.get(name="Uncategorized").pk
+    except Product.DoesNotExist:
+        try:
+            Product.objects.create(name="Uncategorized")
+        except:
+            pass
 
 class Category(models.Model):
     name = models.CharField(max_length=150, unique=True)
@@ -21,7 +45,7 @@ class Category(models.Model):
 
 class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_DEFAULT, 
-                                 related_name='sub_category', default=default_policy)
+                                 related_name='sub_category', default="default_policy")
     name = models.CharField(max_length=150, unique=True)
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -39,7 +63,7 @@ class Product(models.Model):
     sales_price = models.IntegerField(null=True, blank=True, default=0) #might go off
     first_description = models.TextField()
     second_description = models.TextField()
-    sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_DEFAULT, related_name='product', default=default_policy)
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_DEFAULT, related_name='product', default=default_sub)
     views = models.IntegerField(blank=True, null=True, default=0)
     product_img = models.ImageField(upload_to=upload_to, blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -66,8 +90,8 @@ class Product(models.Model):
     # get comments
 
 class Comment(models.Model):
-    commenter = models.ForeignKey(User, on_delete=models.SET_DEFAULT, related_name='comment', default=default_policy)
-    product = models.ForeignKey(Product, on_delete=models.SET_DEFAULT, related_name='comment', default=default_policy)
+    commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment')
+    product = models.ForeignKey(Product, on_delete=models.SET_DEFAULT, related_name='comment', default=default_product)
     comment = models.TextField()
     rate = models.IntegerField(
         default=1,

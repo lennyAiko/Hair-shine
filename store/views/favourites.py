@@ -40,7 +40,11 @@ def get(req):
 def add_item(req):
 
     if FavItem.objects.filter(product=req.data['product']).count() == 1:
-        return Response("Already exists", 400)
+        data = {
+            "status": 400,
+            "data": data
+        }
+        return Response(data, 400)
 
     query = create(req.user)
 
@@ -53,7 +57,7 @@ def add_item(req):
         "data": data
     }
 
-    return Response("Successful", status)
+    return Response(data, status)
 
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
