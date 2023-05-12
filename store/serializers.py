@@ -86,7 +86,7 @@ class FavItemSerializer(ModelSerializer):
         fields = ('id', 'product', 'favourite')
 
 class GetFavItemSerializer(ModelSerializer):
-    product = serializers.ReadOnlyField(source='product.name')
+    product = CreateProductSerializer()
     favourite = serializers.ReadOnlyField(source='favourite.name')
     class Meta:
         model = FavItem
