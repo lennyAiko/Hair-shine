@@ -10,6 +10,13 @@ from drf_yasg.utils import swagger_auto_schema
 
 from .serializers import CreateUserSerializer, ChangePasswordSerializer, ProfileSerializer, UserSerializer
 
+def user_role(user):
+    if user.is_superuser: role = "admin"
+    else: role = "client"
+
+    return role
+
+
 # Create your views here.
 @swagger_auto_schema(method='post', request_body=CreateUserSerializer)
 @api_view(['POST'])
@@ -25,36 +32,10 @@ def register_user(req):
         
         return Response({"status": 201, "message": "proceed to login"}, 201)
     
-@swagger_auto_schema(method='post', request_body=CreateUserSerializer)
-@api_view(['POST'])
-def login_user(req):
-
-    try:
-        user = User.objects.get(username=req.data["username"])
-    except User.DoesNotExist:
-        data = {
-            "status": 404,
-            "message": "Does not exist"
-        }
-        return Response(data, 404)
-
-    res = requests.post(data=req.data, url="http://hairshine.pythonanywhere.com/accounts/get_token/").json()
-
-    role = ""
-    user = User.objects.get(username=req.data["username"])
-    if user.is_superuser: role = "Admin"
-    else: role = "Client"
-
-    res["role"] = role
-
-    return Response(res)
-
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def get_update_delete_user(req):
-
-    role = ""
 
     try:
         user = req.user
@@ -68,12 +49,9 @@ def get_update_delete_user(req):
     if req.method == 'GET':
         profile_serializer = ProfileSerializer(user.profile)
 
-        if user.is_superuser: role = "Admin"
-        else: role = "Client"
-
         data = {
             "status": 200,
-            "role": role,
+            "role": user_role(user),
             "data": profile_serializer.data
         }
 
