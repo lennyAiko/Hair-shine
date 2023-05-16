@@ -48,12 +48,16 @@ def get_products(req, index):
     except SubCategory.DoesNotExist:
         return Response(status=404)
     
-    query = Product.objects.filter(sub_category=sub_category.id)
-    serializer = CreateProductSerializer(query, many=True)
+    query = Product.objects.filter(sub_category=sub_category.id).order_by('-date_added')
+
+    data = Actions.my_paginator(query, req, CreateProductSerializer)
+
+    for i in data["results"]:
+        i["product_img"] = f'http://hairshine.pythonanywhere.com{i["product_img"]}'
 
     data = {
         "status": 200,
-        "data": serializer.data
+        "data": data
     }
 
     return Response(data, 200)
