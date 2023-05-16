@@ -36,6 +36,7 @@ def create_get(req):
 
         data, status = Actions.get(serializer=CreateProductSerializer, model=Product, 
                                    query=query, selection=selection, spy=Q, req=req)
+        
 
     data = {
         "status": status,
