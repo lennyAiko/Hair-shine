@@ -90,6 +90,7 @@ class Actions():
         serializer = serializer(instance, many=False)
         data = serializer.data
         data['rating'] = rating
+        data['product_img'] = f'http://hairshine.pythonanywhere.com{data["product_img"]}'
 
         return data, 200
         

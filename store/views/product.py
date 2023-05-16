@@ -38,7 +38,7 @@ def create_get(req):
                                    query=query, selection=selection, spy=Q, req=req)
         
         for i in data["results"]:
-            i["product_img"] = f'http://hairshine.pythonanywhere.com/{i["product_img"]}'
+            i["product_img"] = f'http://hairshine.pythonanywhere.com{i["product_img"]}'
         
 
     data = {
@@ -102,6 +102,9 @@ def new_products(req):
 
     data, status = Filterer(model=Product, serializer=CreateProductSerializer, 
                             param='-date_added', req=req)
+    
+    for i in data["results"]:
+        i["product_img"] = f'http://hairshine.pythonanywhere.com{i["product_img"]}'
 
     data = {
         "status": status,
@@ -118,6 +121,9 @@ def trending_products(req):
 
     data, status = Filterer(model=Product, serializer=CreateProductSerializer, 
                             param='-views', req=req)
+    
+    for i in data["results"]:
+        i["product_img"] = f'http://hairshine.pythonanywhere.com{i["product_img"]}'
 
     data = {
         "status": status,
