@@ -13,6 +13,7 @@ def creator(data, model):
         first_name = data['first_name'],
         last_name = data['last_name'],
         password = data['password'],
+        email = data['email'],
     )
     Profile.objects.create(
         user = user,
