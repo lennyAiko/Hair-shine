@@ -72,11 +72,6 @@ class Product(models.Model):
     def __str__(self) -> str:
         return self.name
     
-    ## change base url in production
-    def save(self, *args, **kwargs):
-        self.product_img = f'http://hairshine.pythonanywhere.com/{self.product_img}'
-        super(Product, self).save(*args, **kwargs)
-    
     @property
     def sub_category_name(self):
         return self.sub_category.name

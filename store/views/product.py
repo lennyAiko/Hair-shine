@@ -37,6 +37,9 @@ def create_get(req):
         data, status = Actions.get(serializer=CreateProductSerializer, model=Product, 
                                    query=query, selection=selection, spy=Q, req=req)
         
+        for i in data:
+            i["product_img"] = f'http://hairshine.pythonanywhere.com/{i["product_img"]}'
+        
 
     data = {
         "status": status,
