@@ -13,7 +13,7 @@ def creator(data, model):
         first_name = data['first_name'],
         last_name = data['last_name'],
         password = data['password'],
-        email = data['email'],
+        email = data['email']
     )
     Profile.objects.create(
         user = user,
@@ -25,7 +25,7 @@ class CreateUserSerializer(ModelSerializer):
     phone = serializers.CharField(required=True)
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'password', 'phone')
+        fields = ('username', 'first_name', 'last_name', 'password', 'phone', 'email')
 
     def create(self, validated_data):
         return creator(validated_data, User)
