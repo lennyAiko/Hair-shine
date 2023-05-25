@@ -6,3 +6,4 @@ account/__pycache__
 store/__pycache__
 store/views/__pycache__
 db.sqlite3
+.vscode/

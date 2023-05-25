@@ -1,5 +1,4 @@
-from django.contrib.auth.models import User
-import requests
+from .models import User
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -10,15 +9,16 @@ from drf_yasg.utils import swagger_auto_schema
 
 from .serializers import CreateUserSerializer, ChangePasswordSerializer, ProfileSerializer, UserSerializer
 
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+
 def user_role(user):
-    if user.is_superuser: role = "admin"
+    if user.isSuperuser: role = "admin"
     else: role = "client"
 
     return role
 
 
 # Create your views here.
-@swagger_auto_schema(method='post', request_body=CreateUserSerializer)
 @api_view(['POST'])
 def register_user(req):
     """
@@ -31,6 +31,43 @@ def register_user(req):
         serializer.save()
         
         return Response({"status": 201, "message": "proceed to login"}, 201)
+
+@api_view(['POST'])
+def login_user(req):
+    if req.method == "POST":
+        try:
+            user = User.objects.get(email=req.data["email"])
+        except User.DoesNotExist:
+            data = {
+                "status": 404,
+                "message": "No active account found with the given credentials",
+                "code": "no_active_account"
+            }
+            return Response(data, data["status"])
+        
+        if user.check_password(req.data["password"]):
+            token = RefreshToken.for_user(user)
+            data = {
+                'status': 200,
+                'role': user_role(user),
+                'refresh': str(token),
+                'access': str(token.access_token)
+            }
+            return Response(data, data["status"])
+        else:
+            data = {
+                "status": 400,
+                "message": "Incorrect password",
+                "code": "wrong_password"
+            }
+            return Response(data, data["status"])
+
+@api_view(['POST'])
+def refresh(req):
+
+    token = RefreshToken(req.data["refresh"])
+    
+
     
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])

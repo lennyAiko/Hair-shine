@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
-from django.contrib.auth.models import User
+from account.models import User
 from .models import Category, SubCategory, Product, Comment, Cart, ProductItem, FavItem, Favourite, Order
 
 # create category

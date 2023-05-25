@@ -1,23 +1,80 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 # Create your models here.
-
-User = get_user_model()
-
-class Profile(models.Model):
-    """
-    User Profile Model
-    Defines the attributes of a user
-    """
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    phone = models.CharField(max_length=11, blank=True, null=True)
-    # isVerified = models.BooleanField(default=False)
-    location = models.CharField(max_length=30, blank=True, null=True, default="")
-    date_added = models.DateTimeField(auto_now_add=True)
     
-    def __str__(self) -> str:
-        return f"{self.user.username}'s profile"
+class UserManager(BaseUserManager):
+
+    def _create_user(self, phone: str, first_name: str, last_name: str, email: str, password: str=None, is_staff=True, is_superuser=False, is_verified=False) -> "User":
+        if not email:
+            raise ValueError("User must have an email")
+        if not first_name:
+            raise ValueError("User must have an first name")
+        if not last_name:
+            raise ValueError("User must have an last name")
+        if not phone:
+            raise ValueError("User must have a phone number")
+        
+        user = self.model(email=self.normalize_email(email))
+        user.firstname = first_name
+        user.lastname = last_name
+        user.phone = phone
+        user.set_password(password)
+        user.is_active = True
+        user.is_staff=is_staff
+        user.is_superuser = is_superuser
+        user.is_verified = is_verified
+        user.save()
+
+        return user
     
-    def __repr__(self) -> str:
-        return f'{self.user.username} is added'
+    def create_user(self, phone: str, first_name: str, last_name: str, email: str, password: str=None, is_staff=True, is_superuser=False, is_verified=False) -> "User":
+        user = self._create_user(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            password=password,
+            phone=phone,
+        )
+    
+    def create_superuser(self, phone: str, first_name: str, last_name: str, email: str, password: str=None, is_staff=True, is_superuser=False, is_verified=False) -> "User":
+        user = self._create_user(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            password=password,
+            phone=phone,
+            is_staff=True,
+            is_superuser=True,
+            is_verified=True
+        )
+        user.save()
+
+        return user
+    
+class User(AbstractUser):
+    email = models.EmailField(max_length=255, unique=True)
+    first_name = models.CharField(max_length=150, verbose_name="First Name")
+    last_name = models.CharField(max_length=150, verbose_name="Last Name")
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
+    phone = models.CharField(max_length=11)
+    username = None
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ["first_name", "last_name", "phone"]
+
+    def __str__(self):
+        return self.email
+    
+    @property
+    def isSuperuser(self):
+        return self.is_superuser
+    
+    @property
+    def isVerified(self):
+        return self.is_verified
