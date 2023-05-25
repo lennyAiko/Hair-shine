@@ -63,7 +63,8 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'account',
-    'store'
+    'store',
+    'social_django'
 ]
 
 REST_FRAMEWORK = {
@@ -218,3 +219,5 @@ MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'mediafiles')
 MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL = 'account.User'
+
+USER_DETAILS_SERIALIZER = 'account.CustomUserDetailsSerializer' 

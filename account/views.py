@@ -7,9 +7,9 @@ from rest_framework import generics
 
 from drf_yasg.utils import swagger_auto_schema
 
-from .serializers import CreateUserSerializer, ChangePasswordSerializer, ProfileSerializer, UserSerializer
+from .serializers import CreateUserSerializer, ChangePasswordSerializer, UserSerializer
 
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from rest_framework_simplejwt.tokens import RefreshToken
 
 def user_role(user):
     if user.isSuperuser: role = "admin"
@@ -61,21 +61,14 @@ def login_user(req):
                 "code": "wrong_password"
             }
             return Response(data, data["status"])
-
-@api_view(['POST'])
-def refresh(req):
-
-    token = RefreshToken(req.data["refresh"])
-    
-
-    
+     
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def get_update_delete_user(req):
 
     try:
-        user = req.user
+        user = User.objects.get(email=req.user)
     except User.DoesNotExist:
         data = {
             "status": 404,
@@ -84,12 +77,12 @@ def get_update_delete_user(req):
         return Response(data, 404)
     
     if req.method == 'GET':
-        profile_serializer = ProfileSerializer(user.profile)
 
+        serializer = UserSerializer(user)
         data = {
             "status": 200,
             "role": user_role(user),
-            "data": profile_serializer.data
+            "data": serializer.data
         }
 
         return Response(data, 200)
@@ -103,34 +96,18 @@ def get_update_delete_user(req):
         return Response(data, 204)
          
     if req.method == 'PUT':
-        try:
-            user.profile.location = req.data['location']
-        except:
-            user.profile.location = user.profile.location
 
-        try:
-            email = req.data['email']
-        except:
-            email = user.email
-
-        data = {
-            "username": req.user.username,
-            "email": email
-        }
-
-        serializer = UserSerializer(user, data=data)
+        serializer = CreateUserSerializer(user, data=req.data)
 
         if serializer.is_valid():
             serializer.save()
-            user.profile.save()
-            serializer = ProfileSerializer(user.profile)
             data = {
                 "status": 202,
                 "data": serializer.data
             }
 
             return Response(data, 202)
-        
+            
         return Response(serializer.errors, 400)
 
 class ChangePasswordView(generics.UpdateAPIView):

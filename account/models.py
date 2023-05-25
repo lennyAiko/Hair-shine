@@ -36,6 +36,9 @@ class UserManager(BaseUserManager):
             password=password,
             phone=phone,
         )
+        user.save()
+
+        return user
     
     def create_superuser(self, phone: str, first_name: str, last_name: str, email: str, password: str=None, is_staff=True, is_superuser=False, is_verified=False) -> "User":
         user = self._create_user(
@@ -54,8 +57,8 @@ class UserManager(BaseUserManager):
     
 class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
-    first_name = models.CharField(max_length=150, verbose_name="First Name")
-    last_name = models.CharField(max_length=150, verbose_name="Last Name")
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -66,11 +69,24 @@ class User(AbstractUser):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ["first_name", "last_name", "phone"]
+    REQUIRED_FIELDS = []
 
     def __str__(self):
         return self.email
     
+    def find_by_email(self, email):
+        return self.objects.filter(email=email)
+    
+    def get_details(self, email):
+        user = self.objects.get(email=email)
+        data = {
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "phone": user.phone
+        }
+        return data
+
     @property
     def isSuperuser(self):
         return self.is_superuser
@@ -78,3 +94,4 @@ class User(AbstractUser):
     @property
     def isVerified(self):
         return self.is_verified
+    
