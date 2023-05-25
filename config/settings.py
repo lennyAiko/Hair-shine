@@ -220,4 +220,20 @@ MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL = 'account.User'
 
-USER_DETAILS_SERIALIZER = 'account.CustomUserDetailsSerializer' 
+USER_DETAILS_SERIALIZER = 'account.CustomUserDetailsSerializer'
+
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.google.GoogleOAuth2',
+]
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)

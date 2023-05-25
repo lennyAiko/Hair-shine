@@ -11,6 +11,8 @@ from .serializers import CreateUserSerializer, ChangePasswordSerializer, UserSer
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from social_django.utils import psa
+
 def user_role(user):
     if user.isSuperuser: role = "admin"
     else: role = "client"
@@ -96,7 +98,7 @@ def get_update_delete_user(req):
         return Response(data, 204)
          
     if req.method == 'PUT':
-
+        
         serializer = CreateUserSerializer(user, data=req.data)
 
         if serializer.is_valid():

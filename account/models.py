@@ -57,19 +57,19 @@ class UserManager(BaseUserManager):
     
 class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
+    first_name = models.CharField(max_length=150, null=True, blank=True)
+    last_name = models.CharField(max_length=150, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
-    phone = models.CharField(max_length=11)
+    phone = models.CharField(max_length=11, null=True, blank=True)
     username = None
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["first_name", "last_name", "phone"]
 
     def __str__(self):
         return self.email
