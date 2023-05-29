@@ -37,24 +37,11 @@ def get(req):
 @swagger_auto_schema(methods=['post'], request_body=ProductItemSerializer)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def add_item(req):
-
-    if ProductItem.objects.filter(product=req.data['product']).count() == 1:
-        data = {
-            "status": 400,
-            "message": "Already exists"
-        }   
-
-        return Response(data, 400)
+def add_items(req):
 
     query = create(req.user)
 
-    price = Product.objects.get(id=req.data['product']).actual_price
-
-    req.data["amount"] = price * int(req.data['quantity'])
-    req.data["cart"] = query.id
-
-    data, status = Actions.create(serializer=ProductItemSerializer, data=req.data)
+    data, status = Actions.bulk(model=ProductItem, data=req.data, cart=query, second_model=Product)
 
     data = {
         "status": status,

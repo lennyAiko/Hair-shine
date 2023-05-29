@@ -122,6 +122,28 @@ class Actions():
         
         return serializer.errors, 400
     
+    def bulk(model, data, cart, second_model):
+        bulk_list = []
+        for _ in data:
+            bulk_list.append(
+                model(
+                    product=second_model.objects.get(id=_['id']),
+                    quantity=_['quantity'],
+                    amount=_['amount'],
+                    cart=cart
+                )
+            )
+        try:
+            msg = model.objects.bulk_create(bulk_list)
+            data = "Successful"
+            status = 200
+        except:
+            data = "Error adding items"
+            staus = 400
+        return data, status
+
+
+    
 
 def Filterer(model, serializer, param, req=None):
     query = model.objects.all().order_by(param)

@@ -113,7 +113,7 @@ class Cart(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.user.username}'s cart"
+        return f"{self.user.email}'s cart"
 
 class ProductItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_item')
@@ -124,7 +124,7 @@ class ProductItem(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.cart.user.username}'s product item - {self.product.name}"
+        return f"{self.cart.user.email}'s product item - {self.product.name}"
 
 class Favourite(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='favourite')
@@ -132,7 +132,7 @@ class Favourite(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.user.username}'s favourite"
+        return f"{self.user.email}'s favourite"
 
 class FavItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product')
@@ -141,7 +141,7 @@ class FavItem(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.favourite.user.username}'s favourite item"
+        return f"{self.favourite.user.email}'s favourite item"
 
 class Order(models.Model):
     STATUS = (
@@ -160,4 +160,4 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.user.username}'s order"
+        return f"{self.user.email}'s order"

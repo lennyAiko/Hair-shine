@@ -29,7 +29,7 @@ urlpatterns = [
 
     #cart
     path('cart/', cart.get),
-    path('cart/items/', cart.add_item),
+    path('cart/items/', cart.add_items),
     path('cart/items/<int:index>/', cart.get_update_delete_item),
     path('cart/empty/', cart.empty_cart),
 

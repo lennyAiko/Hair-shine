@@ -73,7 +73,7 @@ class GetProductItemSerializer(ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     product_item = GetProductItemSerializer(many=True, read_only=True)
-    user = serializers.ReadOnlyField(source='user.username')
+    user = serializers.ReadOnlyField(source='user.email')
     class Meta:
         model = Cart
         fields = ('id', 'user', 'product_item')
