@@ -1,5 +1,4 @@
 from django.db.models import Q
-from django.views.decorators.cache import cache_page
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -11,7 +10,6 @@ from ..models import Product, Comment
 from ..utils import Actions, Filterer, ReadOnly
 
 @swagger_auto_schema(methods=['post', 'get'], query_serializer=CreateProductSerializer)
-@cache_page(60*15)
 @api_view(['POST', 'GET'])
 @permission_classes([IsAdminUser|ReadOnly])
 def create_get(req):
@@ -69,7 +67,6 @@ def get_update_delete(req, index):
     return Response(data, status)
 
 @swagger_auto_schema(method='get')
-@cache_page(60*15)
 @api_view(['GET'])
 @permission_classes([ReadOnly])
 def get_comments(req, index):
@@ -94,7 +91,6 @@ def get_comments(req, index):
 
 
 @swagger_auto_schema(method='get')
-@cache_page(60*15)
 @api_view(['GET'])
 @permission_classes([ReadOnly])
 def new_products(req):
@@ -113,7 +109,6 @@ def new_products(req):
     return Response(data, status)
 
 @swagger_auto_schema(method='get')
-@cache_page(60*15)
 @api_view(['GET'])
 @permission_classes([ReadOnly])
 def trending_products(req):

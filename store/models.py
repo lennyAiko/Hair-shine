@@ -1,7 +1,7 @@
 from django.db import models
 from account.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
-
+from markupfield.fields import MarkupField
 
 # Create your models here.
 
@@ -61,8 +61,8 @@ class Product(models.Model):
     name = models.CharField(max_length=150, unique=True)
     actual_price = models.IntegerField(default=0)
     sales_price = models.IntegerField(null=True, blank=True, default=0) #might go off
-    first_description = models.TextField()
-    second_description = models.TextField()
+    first_description = MarkupField(default_markup_type='markdown')
+    second_description = MarkupField(default_markup_type='markdown')
     sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_DEFAULT, related_name='product', default=default_sub)
     views = models.IntegerField(blank=True, null=True, default=0)
     product_img = models.ImageField(upload_to=upload_to, blank=True, null=True)
@@ -92,7 +92,7 @@ class Product(models.Model):
 class Comment(models.Model):
     commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment')
     product = models.ForeignKey(Product, on_delete=models.SET_DEFAULT, related_name='comment', default=default_product)
-    comment = models.TextField()
+    comment = MarkupField(default_markup_type='markdown')
     rate = models.IntegerField(
         default=1,
         validators=[MaxValueValidator(5), MinValueValidator(1)]
