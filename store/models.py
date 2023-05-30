@@ -92,7 +92,7 @@ class Product(models.Model):
 class Comment(models.Model):
     commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment')
     product = models.ForeignKey(Product, on_delete=models.SET_DEFAULT, related_name='comment', default=default_product)
-    comment = MarkupField(default_markup_type='markdown')
+    comment = models.TextField()
     rate = models.IntegerField(
         default=1,
         validators=[MaxValueValidator(5), MinValueValidator(1)]
