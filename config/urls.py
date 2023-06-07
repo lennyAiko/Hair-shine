@@ -39,7 +39,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     # admin
-    re_path(r'^admin/', admin.site.urls),
+    re_path(r'^lenny/', admin.site.urls),
 
     path('api-auth/', include('rest_framework.urls')),
 

@@ -16,14 +16,15 @@ class UserManager(BaseUserManager):
             raise ValueError("User must have a phone number")
         
         user = self.model(email=self.normalize_email(email))
-        user.firstname = first_name
-        user.lastname = last_name
+        user.first_name = first_name
+        user.last_name = last_name
         user.phone = phone
         user.set_password(password)
         user.is_active = True
-        user.is_staff=is_staff
+        user.is_staff = is_staff
         user.is_superuser = is_superuser
         user.is_verified = is_verified
+        user.role = "admin" if is_superuser else "client"
         user.save()
 
         return user
@@ -40,7 +41,7 @@ class UserManager(BaseUserManager):
 
         return user
     
-    def create_superuser(self, phone: str, first_name: str, last_name: str, email: str, password: str=None, is_staff=True, is_superuser=False, is_verified=False) -> "User":
+    def create_superuser(self, phone: str, first_name: str, last_name: str, email: str, password: str=None, is_staff=True, is_superuser=True, is_verified=True) -> "User":
         user = self._create_user(
             first_name=first_name,
             last_name=last_name,
@@ -49,7 +50,7 @@ class UserManager(BaseUserManager):
             phone=phone,
             is_staff=True,
             is_superuser=True,
-            is_verified=True
+            is_verified=True,
         )
         user.save()
 
@@ -59,6 +60,7 @@ class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
     first_name = models.CharField(max_length=150, null=True, blank=True)
     last_name = models.CharField(max_length=150, null=True, blank=True)
+    role = models.CharField(max_length=7, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -83,7 +85,8 @@ class User(AbstractUser):
             "first_name": user.first_name,
             "last_name": user.last_name,
             "email": user.email,
-            "phone": user.phone
+            "phone": user.phone,
+            "role": user.role
         }
         return data
 
