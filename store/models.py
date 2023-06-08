@@ -1,7 +1,6 @@
 from django.db import models
 from account.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
-from markupfield.fields import MarkupField
 
 # Create your models here.
 
@@ -61,8 +60,8 @@ class Product(models.Model):
     name = models.CharField(max_length=150, unique=True)
     actual_price = models.IntegerField(default=0)
     sales_price = models.IntegerField(null=True, blank=True, default=0) #might go off
-    first_description = MarkupField(default_markup_type='markdown')
-    second_description = MarkupField(default_markup_type='markdown')
+    first_description = models.TextField()
+    second_description = models.TextField()
     sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_DEFAULT, related_name='product', default=default_sub)
     views = models.IntegerField(blank=True, null=True, default=0)
     product_img = models.ImageField(upload_to=upload_to, blank=True, null=True)
@@ -151,10 +150,14 @@ class Order(models.Model):
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='order')
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    phone = models.CharField(max_length=50)
     address = models.TextField()
     state = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
     method = models.CharField(max_length=40)
+    amount = models.IntegerField(null=True, blank=True)
     status = models.CharField(choices=STATUS, max_length=32, default='received')
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
