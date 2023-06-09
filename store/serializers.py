@@ -122,3 +122,9 @@ class GetCategoryProducts(ModelSerializer):
     class Meta:
         model = Category
         fields = ('id', 'name', 'sub_category')
+
+class AllSubCategorySerializer(serializers.ModelSerializer):
+    sub_category = GetCategorySubSerializer(many=True, read_only=True)
+    class Meta:
+        model = Category
+        fields = ('id', 'name', 'sub_category')

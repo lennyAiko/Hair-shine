@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAdminUser
 
 from drf_yasg.utils import swagger_auto_schema
 
-from ..serializers import CategorySerializer, GetCategorySubSerializer, GetCategoryProducts, CreateProductSerializer
+from ..serializers import CategorySerializer, GetCategorySubSerializer, GetCategoryProducts, AllSubCategorySerializer
 from ..models import Category, SubCategory, Product
 from ..utils import Actions, ReadOnly
 
@@ -30,7 +30,7 @@ def create_get(req):
             if selection not in OPTIONS:
                 return Response({'message': 'Invalid search selection'}, 400)
 
-        data, status = Actions.get(serializer=CategorySerializer, model=Category, 
+        data, status = Actions.get(serializer=AllSubCategorySerializer, model=Category, 
                                    query=query, selection=selection, spy=Q, req=req)
 
     data = {
