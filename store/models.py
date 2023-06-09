@@ -43,8 +43,7 @@ class Category(models.Model):
         return self.name
 
 class SubCategory(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.SET_DEFAULT, 
-                                 related_name='sub_category', default=default_policy)
+    category = models.ForeignKey(Category, related_name='sub_category', on_delete=models.PROTECT,db_constraint=False)
     name = models.CharField(max_length=150, unique=True)
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -62,7 +61,7 @@ class Product(models.Model):
     sales_price = models.IntegerField(null=True, blank=True, default=0) #might go off
     first_description = models.TextField()
     second_description = models.TextField()
-    sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_DEFAULT, related_name='product', default=default_sub)
+    sub_category = models.ForeignKey(SubCategory, related_name='product', on_delete=models.PROTECT,db_constraint=False)
     views = models.IntegerField(blank=True, null=True, default=0)
     product_img = models.ImageField(upload_to=upload_to, blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -90,7 +89,7 @@ class Product(models.Model):
 
 class Comment(models.Model):
     commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment')
-    product = models.ForeignKey(Product, on_delete=models.SET_DEFAULT, related_name='comment', default=default_product)
+    product = models.ForeignKey(Product, related_name='comment', on_delete=models.PROTECT, db_constraint=False)
     comment = models.TextField()
     rate = models.IntegerField(
         default=1,
