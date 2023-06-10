@@ -19,6 +19,13 @@ def user_role(user):
 
     return role
 
+def get_user_object(query):
+    print(query)
+    try:
+        user = User.objects.get(email=query)
+        return user
+    except User.DoesNotExist:
+        return False
 
 # Create your views here.
 @api_view(['POST'])
@@ -26,26 +33,30 @@ def register_user(req):
     """
     An endpoint for creating user
     """
-    if req.method=='POST':
-        serializer = CreateUserSerializer(data=req.data)
-        serializer.is_valid(raise_exception=True)
-        
-        serializer.save()
-        
-        return Response({"status": 201, "message": "proceed to login"}, 201)
+
+    get_user = get_user_object(req.data['email'])
+    if get_user:
+        return Response({"status": 409, "message": "this user exists already"}, 409)
+    else:
+        if req.method=='POST':
+            serializer = CreateUserSerializer(data=req.data)
+            serializer.is_valid(raise_exception=True)
+            
+            serializer.save()
+            
+            return Response({"status": 201, "message": "proceed to login"}, 201)
 
 @api_view(['POST'])
 def login_user(req):
     if req.method == "POST":
-        try:
-            user = User.objects.get(email=req.data["email"])
-        except User.DoesNotExist:
+        user = get_user_object(req.data['email'])
+        if user == False:
             data = {
                 "status": 404,
                 "message": "No active account found with the given credentials",
                 "code": "no_active_account"
             }
-            return Response(data, data["status"])
+            return Response(data, data["status"])    
         
         if user.check_password(req.data["password"]):
             token = RefreshToken.for_user(user)
@@ -59,8 +70,8 @@ def login_user(req):
         else:
             data = {
                 "status": 400,
-                "message": "Incorrect password",
-                "code": "wrong_password"
+                "message": "wrong credentials provided",
+                "code": "incorrect"
             }
             return Response(data, data["status"])
      
@@ -83,7 +94,6 @@ def get_update_delete_user(req):
         serializer = UserSerializer(user)
         data = {
             "status": 200,
-            "role": user_role(user),
             "data": serializer.data
         }
 

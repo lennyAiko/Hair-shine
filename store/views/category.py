@@ -20,7 +20,11 @@ def create_get(req):
     OPTIONS = ['products', 'categories', 'sub_categories']
 
     if req.method == "POST":
-        data, status = Actions.create(serializer=CategorySerializer, data=req.data)
+        try:
+            Category.objects.get(name=req.data["name"])
+            data, status = ["category already exists", 409]
+        except Category.DoesNotExist:
+            data, status = Actions.create(serializer=CategorySerializer, data=req.data)
     
     if req.method == "GET":
         query = req.GET.get('query')
@@ -79,41 +83,3 @@ def get_update_delete(req, index):
     }
 
     return Response(data, status)
-
-def adder(data, store):
-    store.append(data)
-    return
-
-@swagger_auto_schema(method='get')
-@api_view(['GET'])
-@permission_classes([IsAdminUser|ReadOnly])
-def get_products(req, index=None):
-    store = []
-
-    try:
-        if type(index) == int:
-            category = Category.objects.get(id=index)
-        if type(index) == str:
-            category = Category.objects.get(name=index)
-    except:
-        data = {
-            "status": 404,
-            "data": "Does not exist"
-        }
-        return Response(data, data['status'])
-
-        
-    serializer = GetCategoryProducts(category, many=False)
-
-    for i in serializer.data['sub_category']:
-        query = Product.objects.filter(sub_category=i)
-        serializer = CreateProductSerializer(query, many=True)
-        for i in serializer.data:
-            store.append(i)
-
-    data = {
-        "status": 200,
-        "data": store
-    }
-
-    return Response(data, data['status'])

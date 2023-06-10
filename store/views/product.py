@@ -17,7 +17,11 @@ def create_get(req):
     OPTIONS = ['products']
 
     if req.method == "POST":
-        data, status = Actions.create(serializer=CreateProductSerializer, data=req.data)
+        try:
+            Product.objects.get(name=req.data["name"])
+            data, status = ["product already exists", 409]
+        except Product.DoesNotExist:
+            data, status = Actions.create(serializer=CreateProductSerializer, data=req.data)
     
     if req.method == "GET":
         query = req.GET.get('query')

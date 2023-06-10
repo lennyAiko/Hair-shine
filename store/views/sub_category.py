@@ -18,7 +18,11 @@ def create_get(req):
     OPTIONS = ['products', 'categories', 'sub_categories']
 
     if req.method == "POST":
-        data, status = Actions.create(serializer=PostSubCategorySerializer, data=req.data)
+        try:
+            SubCategory.objects.get(name=req.data["name"])
+            data, status = ["subcategory already exists", 409]
+        except SubCategory.DoesNotExist:
+            data, status = Actions.create(serializer=PostSubCategorySerializer, data=req.data)
     
     if req.method == "GET":
         

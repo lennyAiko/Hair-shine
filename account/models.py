@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
     
 class UserManager(BaseUserManager):
 
-    def _create_user(self, phone: str, first_name: str, last_name: str, email: str, password: str=None, is_staff=True, is_superuser=False, is_verified=False) -> "User":
+    def _create_user(self, role: str, phone: str, first_name: str, last_name: str, email: str, password: str=None, is_staff=True, is_superuser=False, is_verified=False) -> "User":
         if not email:
             raise ValueError("User must have an email")
         if not first_name:
@@ -24,7 +24,7 @@ class UserManager(BaseUserManager):
         user.is_staff = is_staff
         user.is_superuser = is_superuser
         user.is_verified = is_verified
-        user.role = "admin" if is_superuser else "client"
+        user.role = role
         user.save()
 
         return user
@@ -36,6 +36,7 @@ class UserManager(BaseUserManager):
             email=email,
             password=password,
             phone=phone,
+            role="client"
         )
         user.save()
 
@@ -51,6 +52,7 @@ class UserManager(BaseUserManager):
             is_staff=True,
             is_superuser=True,
             is_verified=True,
+            role="admin"
         )
         user.save()
 
@@ -71,7 +73,7 @@ class User(AbstractUser):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ["first_name", "last_name", "phone"]
+    REQUIRED_FIELDS = ["first_name", "last_name", "phone", "role"]
 
     def __str__(self):
         return self.email

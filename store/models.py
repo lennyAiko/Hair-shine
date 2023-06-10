@@ -59,8 +59,7 @@ class Product(models.Model):
     name = models.CharField(max_length=150, unique=True)
     actual_price = models.IntegerField(default=0)
     sales_price = models.IntegerField(null=True, blank=True, default=0) #might go off
-    first_description = models.TextField()
-    second_description = models.TextField()
+    desc = models.TextField()
     sub_category = models.ForeignKey(SubCategory, related_name='product', on_delete=models.PROTECT,db_constraint=False)
     views = models.IntegerField(blank=True, null=True, default=0)
     product_img = models.ImageField(upload_to=upload_to, blank=True, null=True)
