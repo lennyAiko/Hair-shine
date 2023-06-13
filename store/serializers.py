@@ -108,7 +108,7 @@ class OrderSerializer(ModelSerializer):
 
 # get order
 class GetOrderSerializer(ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
+    user = serializers.ReadOnlyField(source='user.email')
     class Meta:
         model = Order
         fields = ('id', 'user', 'first_name', 'last_name', 'phone', 'address', 'state', 'city', 'method', 'status')

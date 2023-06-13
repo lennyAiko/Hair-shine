@@ -21,6 +21,9 @@ def create(user):
 @permission_classes([IsAdminUser])
 def get_all(req):
 
+    if req.user.role == "client":
+        return Response({"message": "Does not exist", "status": 404}, 404)
+
     data, status = Actions.get(serializer=GetOrderSerializer, model=Order, req=req)
 
     data = {
@@ -36,6 +39,7 @@ def get_all(req):
 def create_get(req):
 
     if req.method == "GET":
+
         query = Order.objects.filter(user=req.user)
         serializer = OrderSerializer(query, many=True)
 
@@ -58,7 +62,7 @@ def create_get(req):
             "data": data
         }
 
-        return Response("Successful", 200)
+        return Response(data, 200)
     
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
