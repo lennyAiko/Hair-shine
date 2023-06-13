@@ -47,7 +47,7 @@ class CreateProductSerializer(ModelSerializer):
     comment = CommentSerializer(many=True, read_only=True)
     class Meta:
         model = Product
-        fields = ('id', 'name', 'actual_price', 'sales_price', 'first_description', 'second_description',
+        fields = ('id', 'name', 'actual_price', 'sales_price', 'desc',
                   'views', 'product_img', 'sub_category', 'comment')
 
 class ProductCommentSerializer(ModelSerializer):
