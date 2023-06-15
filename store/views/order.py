@@ -13,6 +13,16 @@ res = json.load(info)
 
 BASE_URL = res["BASE_URL"]
 
+SECRET_KEY = res["PAYSTACK_SECRET_KEY"]
+OPTIONS = {"Authorization": f'Bearer {SECRET_KEY}', "Content-Type": "application/json"}
+
+def post_requests(url, payload):
+    payload = json.dumps(payload, indent=4) 
+    res = requests.post(url=url, data=payload, headers=OPTIONS)
+    res = res.json()
+
+    return res
+
 def create(user):
     try:
         query = Order.objects.get(user=user)
@@ -63,12 +73,23 @@ def create_get(req):
 
         data, status = Actions.create(serializer=OrderSerializer, data=req.data)
 
+        if status == 200:
+
+            payload = {
+                "email": str(req.data['email']),
+                "amount": int(req.data['amount']) * 100
+            }
+
+            res = post_requests(f'{BASE_URL}/transaction/initialize', payload)
+
+            return Response(res['data']['authorization_url'], 200)
+
         data = {
-            "status": status,
-            "data": data
+            "status": 500,
+            "data": "Could not contact server"
         }
 
-        return Response(data, 200)
+        return Response(data, 500)
     
 @swagger_auto_schema(methods=['get', 'put', 'delete'])
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -115,26 +136,3 @@ def webhook(req):
         serializer.save()
 
     return Response(200)
-
-SECRET_KEY = res["PAYSTACK_SECRET_KEY"]
-OPTIONS = {"Authorization": f'Bearer {SECRET_KEY}', "Content-Type": "application/json"}
-
-def post_requests(url, payload):
-    payload = json.dumps(payload, indent=4) 
-    res = requests.post(url=url, data=payload, headers=OPTIONS)
-    res = res.json()
-
-    return res
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def make_transfer(req):
-    
-    payload = {
-        "email": str(req.data['email']),
-        "amount": int(req.data['amount']) * 100
-    }
-
-    res = post_requests(f'{BASE_URL}/transaction/initialize', payload)
-
-    return Response(res['data']['authorization_url'], 200)
