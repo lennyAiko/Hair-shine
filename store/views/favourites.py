@@ -13,7 +13,7 @@ def create(user):
     except:
         Favourite.objects.create(user=user)
         query = Favourite.objects.get(user=user)
-    
+
     return query
 
 @swagger_auto_schema(methods=['get'], request_body=FavouriteSerializer)
@@ -22,7 +22,7 @@ def create(user):
 def get(req):
 
     query = create(req.user)
-        
+
     serializer = FavouriteSerializer(query, many=False)
 
     data, status = serializer.data, 200
@@ -42,7 +42,7 @@ def add_item(req):
     if FavItem.objects.filter(product=req.data['product']).count() == 1:
         data = {
             "status": 400,
-            "data": "Item already exist"
+            "data": "Item already exists"
         }
         return Response(data, 400)
 
@@ -66,10 +66,10 @@ def get_update_delete_item(req, index):
 
     if req.method == 'GET':
         data, status = Actions.get_single(serializer=GetFavItemSerializer, model=FavItem, index=index)
-    
+
     if req.method == 'DELETE':
         data, status = Actions.delete(model=FavItem, index=index)
-         
+
     if req.method == 'PUT':
         data, status = Actions.update(serializer=GetFavItemSerializer, model=FavItem, index=index, data=req.data, item=True)
 
@@ -77,5 +77,5 @@ def get_update_delete_item(req, index):
         "status": status,
         "data": data
     }
-    
+
     return Response(data, status)
