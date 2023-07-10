@@ -39,7 +39,7 @@ def create_get(req):
                                    query=query, selection=selection, spy=Q, req=req)
         
         for i in data["results"]:
-            i["product_img"] = f'http://hairshine.pythonanywhere.com{i["product_img"]}'
+            i["product_img"] = f'https://backend.hairsenseretail.com/{i["product_img"]}'
         
 
     data = {

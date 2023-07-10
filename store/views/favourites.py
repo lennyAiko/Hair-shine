@@ -42,7 +42,7 @@ def add_item(req):
     if FavItem.objects.filter(product=req.data['product']).count() == 1:
         data = {
             "status": 400,
-            "data": data
+            "data": "Item already exist"
         }
         return Response(data, 400)
 
