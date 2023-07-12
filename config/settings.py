@@ -40,7 +40,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:3005',
     'http://localhost:5173',
     'http://localhost:4000',
-    'https://www.hairsenseretail.com/'
+    'https://www.hairsenseretail.com'
 ]
 CORS_ALLOW_HEADERS = [
     "accept",

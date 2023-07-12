@@ -73,16 +73,18 @@ def create_get(req):
 
         data, status = Actions.create(serializer=OrderSerializer, data=req.data)
 
-        if status == 200:
+        print(data, status)
+
+        if status == 201:
 
             payload = {
-                "email": str(req.data['email']),
+                "email": str(req.user.email),
                 "amount": int(req.data['amount']) * 100
             }
 
             res = post_requests(f'{BASE_URL}/transaction/initialize', payload)
 
-            return Response(res['data']['authorization_url'], 200)
+            return Response({"url": res['data']['authorization_url']}, 200)
 
         data = {
             "status": 500,
@@ -121,18 +123,21 @@ def webhook(req):
     if(len(req.headers['X-Paystack-Signature']) != 128): 
         return Response(status=403)
     
-    if req.data['event'] == "charge.success":
-        payload = {
-            'event': req.data['event'],
-            'reference':req.data['data']['reference'],
-            'amount': req.data['data']['amount'],
-            'status': req.data['data']['status'],
-            'customer_email': req.data['data']['customer']['email'],
-            'customer_code': req.data['data']['customer']['customer_code'],
-        }
+    with open('paystack.json', 'w+') as f:
+        f.write(str(json(req.data, indent=4)))
+    
+    # if req.data['event'] == "charge.success":
+    #     payload = {
+    #         'event': req.data['event'],
+    #         'reference':req.data['data']['reference'],
+    #         'amount': req.data['data']['amount'],
+    #         'status': req.data['data']['status'],
+    #         'customer_email': req.data['data']['customer']['email'],
+    #         'customer_code': req.data['data']['customer']['customer_code'],
+    #     }
 
-        serializer = ChargeSerializer(data=payload)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+    #     serializer = ChargeSerializer(data=payload)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
 
     return Response(200)
