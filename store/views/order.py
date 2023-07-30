@@ -73,13 +73,12 @@ def create_get(req):
 
         data, status = Actions.create(serializer=OrderSerializer, data=req.data)
 
-        print(data, status)
-
         if status == 201:
 
             payload = {
                 "email": str(req.user.email),
-                "amount": int(req.data['amount']) * 100
+                "amount": int(req.data['amount']) * 100,
+                "callback_url": "https://www.hairsenseretail.com/order"
             }
 
             res = post_requests(f'{BASE_URL}/transaction/initialize', payload)
