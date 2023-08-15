@@ -150,6 +150,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='order')
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
+    products = models.ManyToManyField(Product, related_name="ordered_products")
     phone = models.CharField(max_length=50)
     address = models.TextField()
     state = models.CharField(max_length=50)

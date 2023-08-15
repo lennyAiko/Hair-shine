@@ -78,7 +78,7 @@ def create_get(req):
             payload = {
                 "email": str(req.user.email),
                 "amount": int(req.data['amount']) * 100,
-                "callback_url": "https://www.hairsenseretail.com/order"
+                "callback_url": "https://www.hairsenseretail.com/my_account"
             }
 
             res = post_requests(f'{BASE_URL}/transaction/initialize', payload)
@@ -119,8 +119,8 @@ def webhook(req):
     if req.method != 'POST':
         return Response(status=403)
     
-    if(len(req.headers['X-Paystack-Signature']) != 128): 
-        return Response(status=403)
+    # if(len(req.headers['X-Paystack-Signature']) != 128): 
+    #     return Response(status=403)
     
     with open('paystack.json', 'w+') as f:
         f.write(str(json(req.data, indent=4)))

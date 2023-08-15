@@ -14,8 +14,6 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
-import markdown
-from docutils.core import publish_parts
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -67,7 +65,7 @@ INSTALLED_APPS = [
 
     'account',
     'store',
-    'social_django'
+    # 'social_django'
 ]
 
 REST_FRAMEWORK = {
@@ -239,15 +237,4 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
-)
-
-
-
-def render_rest(markup):
-    parts = publish_parts(source=markup, writer_name="html4css1")
-    return parts["fragment"]
-
-MARKUP_FIELD_TYPES = (
-    ('markdown', markdown.markdown),
-    ('ReST', render_rest),
 )
