@@ -10,7 +10,7 @@ crypto==1.4.1
 cryptography==40.0.2
 defusedxml==0.7.1
 distlib==0.3.6
-Django==4.1.6
+Django==latest_version
 django-cors-headers==3.13.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
