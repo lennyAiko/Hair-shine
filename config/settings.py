@@ -13,7 +13,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 import os
-from dotenv import load_dotenv
+from decouple import config
+import urllib.parse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-load_dotenv()
-SECRET_KEY = str(os.getenv('SECRET_KEY'))
-
+SECRET_KEY = config('SECRET_KEY')
+DB_USERNAME = urllib.parse.quote_plus(config('DB_USERNAME'))
+DB_PASSWORD = urllib.parse.quote_plus(config('DB_PASSWORD'))
+DB_NAME = config('DB_NAME')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -152,8 +154,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo', # 'django.db.backends.sqlite3',
+        'NAME': 'hairsense', # BASE_DIR / 'db.sqlite3',
+        # 'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': f'mongodb+srv://{DB_USERNAME}:{DB_PASSWORD}@cluster0.836bk4k.mongodb.net/{DB_NAME}?retryWrites=true&w=majority' # 'mongodb://localhost:27017/hairsense',
+        }
     }
 }
 
