@@ -7,13 +7,13 @@ from ..serializers import OrderSerializer, GetOrderSerializer, ChargeSerializer,
 from ..models import Order
 from ..utils import Actions, ReadOnly
 import json, requests
+from decouple import config
 
-info = open('keys.json',)
-res = json.load(info)
-
-BASE_URL = res["BASE_URL"]
-
-SECRET_KEY = res["PAYSTACK_SECRET_KEY"]
+SECRET_KEY = config('SECRET_KEY')
+HYDROGEN_TEST_URL = config('HYDROGEN_TEST_URL')
+HYDROGEN_LIVE_URL = config('HYDROGEN_LIVE_URL')
+HYDROGEN_USERNAME = config('HYDROGEN_USERNAME')
+HYDROGEN_PASSWORD = config('HYDROGEN_PASSWORD')
 OPTIONS = {"Authorization": f'Bearer {SECRET_KEY}', "Content-Type": "application/json"}
 
 def post_requests(url, payload):
@@ -81,7 +81,7 @@ def create_get(req):
                 "callback_url": "https://www.hairsenseretail.com/my_account"
             }
 
-            res = post_requests(f'{BASE_URL}/transaction/initialize', payload)
+            res = post_requests(f'{HYDROGEN_TEST_URL}/transaction/initialize', payload)
 
             return Response({"url": res['data']['authorization_url']}, 200)
 

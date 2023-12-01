@@ -27,7 +27,7 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
    openapi.Info(
-      title="Hair Shine API",
+      title="Hairsense API",
       default_version='v1',
       description="This is the backend API",
       terms_of_service="https://www.google.com/policies/terms/",
