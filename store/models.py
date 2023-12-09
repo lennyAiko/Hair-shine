@@ -165,12 +165,11 @@ class Order(models.Model):
         return f"{self.user.email}'s order"
     
 class Charge(models.Model):
-    event = models.CharField(max_length=40)
-    reference = models.CharField(max_length=15)
+    status = models.CharField(max_length=40)
+    transaction_ref = models.CharField(max_length=100)
     amount = models.IntegerField()
-    status = models.CharField(max_length=15)
+    payment_type = models.CharField(max_length=30)
     customer_email = models.EmailField()
-    customer_code = models.CharField(max_length=30)
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:

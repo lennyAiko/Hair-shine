@@ -14,7 +14,8 @@ HYDROGEN_TEST_URL = config('HYDROGEN_TEST_URL')
 HYDROGEN_LIVE_URL = config('HYDROGEN_LIVE_URL')
 HYDROGEN_USERNAME = config('HYDROGEN_USERNAME')
 HYDROGEN_PASSWORD = config('HYDROGEN_PASSWORD')
-OPTIONS = {"Authorization": f'Bearer {SECRET_KEY}', "Content-Type": "application/json"}
+HYDROGEN_API_KEY = config('HYDROGEN_API_KEY')
+OPTIONS = {"authorization": HYDROGEN_API_KEY, "Content-Type": "application/json"}
 
 def post_requests(url, payload):
     payload = json.dumps(payload, indent=4) 
@@ -77,13 +78,23 @@ def create_get(req):
 
             payload = {
                 "email": str(req.user.email),
-                "amount": int(req.data['amount']) * 100,
-                "callback_url": "https://www.hairsenseretail.com/my_account"
+                "amount": int(req.data['amount']),
+                "callback": "https://www.hairsenseretail.com/my_account",
+                "currency": "NGN",
+                "description": "Payment for HairSense Retail",
+                "meta": "test meta",
             }
 
-            res = post_requests(f'{HYDROGEN_TEST_URL}/transaction/initialize', payload)
+            res = post_requests(f'{HYDROGEN_TEST_URL}/merchant/initiate-payment', payload)
 
-            return Response({"url": res['data']['authorization_url']}, 200)
+            print(res)
+
+            return Response(
+                {
+                    "data": {"url": res['data']['url']},
+                    "message": "Successfully fetched payment URL"
+                 }, 
+                200)
 
         data = {
             "status": 500,
@@ -119,24 +130,36 @@ def webhook(req):
     if req.method != 'POST':
         return Response(status=403)
     
-    # if(len(req.headers['X-Paystack-Signature']) != 128): 
-    #     return Response(status=403)
-    
-    with open('paystack.json', 'w+') as f:
-        f.write(str(json(req.data, indent=4)))
-    
-    # if req.data['event'] == "charge.success":
-    #     payload = {
-    #         'event': req.data['event'],
-    #         'reference':req.data['data']['reference'],
-    #         'amount': req.data['data']['amount'],
-    #         'status': req.data['data']['status'],
-    #         'customer_email': req.data['data']['customer']['email'],
-    #         'customer_code': req.data['data']['customer']['customer_code'],
-    #     }
+    if req.data['event'] == "charge.success":
+        payload = {
+            'status': req.data['status'],
+            'transaction_ref':req.data['data']['transactionRef'],
+            'payment_type': req.data['paymentType'],
+            'amount': req.data['amount'],
+            'customer_email': req.data['customerEmail'],
+        }
 
-    #     serializer = ChargeSerializer(data=payload)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
+        serializer = ChargeSerializer(data=payload)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
     return Response(200)
+
+@api_view(['POST'])
+def confirm_payment(req):
+
+    transaction_ref = req.data["reference"]
+
+    res = post_requests("https://qa-api.hydrogenpay.com/bepayment/api/v1/Merchant/confirm-payment", transaction_ref)
+
+    return Response(
+        {
+            "message": res["message"],
+            "status": 200,
+            "data": {
+                "amount": res["data"]["amount"],
+                "customerEmail": res["data"]["customerEmail"],
+                "status": res["data"]["status"],
+                "paymentType": res["data"]["paymentType"],
+            }
+        }, 200)

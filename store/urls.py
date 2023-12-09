@@ -41,6 +41,7 @@ urlpatterns = [
     path('favourite/items/', favourites.add_item),
     path('favourite/items/<int:index>/', favourites.get_update_delete_item),
 
-    path('webhook/', order.webhook)
+    path('webhook/', order.webhook),
+    path('confirm_payment/', order.confirm_payment)
 
 ]
