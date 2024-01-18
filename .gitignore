@@ -8,3 +8,4 @@ store/views/__pycache__
 db.sqlite3
 .vscode/
 keys.json
+schema.yml
