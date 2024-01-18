@@ -40,7 +40,8 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:3005',
     'http://localhost:5173',
     'http://localhost:4000',
-    'https://www.hairsenseretail.com'
+    'https://www.hairsenseretail.com',
+    'http://localhost:8000'
 ]
 CORS_ALLOW_HEADERS = [
     "accept",
@@ -61,9 +62,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'drf_yasg',
     'rest_framework_simplejwt',
     'corsheaders',
+    'drf_spectacular',
 
     'account',
     'store',
@@ -74,7 +75,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.FormParser',
@@ -83,6 +84,10 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 15
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Hairsense Retail',
 }
 
 SIMPLE_JWT = {
@@ -126,6 +131,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -154,11 +160,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'djongo', # 'django.db.backends.sqlite3',
-        'NAME': 'hairsense', # BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',  # 'django.db.backends.sqlite3',
+        'NAME': 'hairsense',  # BASE_DIR / 'db.sqlite3',
         # 'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': f'mongodb+srv://{DB_USERNAME}:{DB_PASSWORD}@cluster0.836bk4k.mongodb.net/{DB_NAME}?retryWrites=true&w=majority' # 'mongodb://localhost:27017/hairsense',
+            # 'mongodb://localhost:27017/hairsense',
+            'host': f'mongodb+srv://{DB_USERNAME}:{DB_PASSWORD}@cluster0.836bk4k.mongodb.net/{DB_NAME}?retryWrites=true&w=majority'
         }
     }
 }
@@ -244,3 +251,8 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
 )
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+VENV_PATH = os.path.dirname(BASE_DIR)
+STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')

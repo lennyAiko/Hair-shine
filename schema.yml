@@ -1,0 +1,978 @@
+openapi: 3.0.3
+info:
+  title: Hairsense Retail
+  version: 0.0.0
+paths:
+  /accounts/register/:
+    post:
+      operationId: accounts_register_create
+      description: An endpoint for creating user
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /accounts/reset_password/:
+    put:
+      operationId: accounts_reset_password_update
+      description: An endpoint for changing user password
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangePassword'
+          description: ''
+    patch:
+      operationId: accounts_reset_password_partial_update
+      description: An endpoint for changing user password
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedChangePassword'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedChangePassword'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedChangePassword'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangePassword'
+          description: ''
+  /accounts/sign_in/:
+    post:
+      operationId: accounts_sign_in_create
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /accounts/token_refresh/:
+    post:
+      operationId: accounts_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /accounts/user/:
+    get:
+      operationId: accounts_user_retrieve
+      tags:
+      - accounts
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: accounts_user_update
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    delete:
+      operationId: accounts_user_destroy
+      tags:
+      - accounts
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /store/cart/:
+    get:
+      operationId: store_cart_retrieve
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/cart/empty/:
+    get:
+      operationId: store_cart_empty_retrieve
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/cart/items/:
+    post:
+      operationId: store_cart_items_create
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/cart/items/{index}/:
+    get:
+      operationId: store_cart_items_retrieve
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: store_cart_items_update
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: store_cart_items_destroy
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /store/categories/:
+    get:
+      operationId: store_categories_retrieve
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: store_categories_create
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/categories/{index}/:
+    get:
+      operationId: store_categories_retrieve_2
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: store_categories_update
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: store_categories_destroy
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /store/categories/{index}/subs/:
+    get:
+      operationId: store_categories_subs_retrieve
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/comments/:
+    get:
+      operationId: store_comments_retrieve
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: store_comments_create
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/comments/{index}/:
+    get:
+      operationId: store_comments_retrieve_2
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: store_comments_update
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: store_comments_destroy
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /store/confirm_payment/:
+    post:
+      operationId: store_confirm_payment_create
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /store/favourite/:
+    get:
+      operationId: store_favourite_retrieve
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/favourite/items/:
+    post:
+      operationId: store_favourite_items_create
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/favourite/items/{index}/:
+    get:
+      operationId: store_favourite_items_retrieve
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: store_favourite_items_update
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: store_favourite_items_destroy
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /store/orders/:
+    get:
+      operationId: store_orders_retrieve
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: store_orders_create
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/orders/{index}/:
+    get:
+      operationId: store_orders_retrieve_2
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: store_orders_update
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: store_orders_destroy
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /store/orders/all/:
+    get:
+      operationId: store_orders_all_retrieve
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/products/:
+    get:
+      operationId: store_products_retrieve
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: store_products_create
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/products/{index}/:
+    get:
+      operationId: store_products_retrieve_2
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: store_products_update
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: store_products_destroy
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /store/products/{index}/comments/:
+    get:
+      operationId: store_products_comments_retrieve
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/products/new/:
+    get:
+      operationId: store_products_new_retrieve
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/products/trending/:
+    get:
+      operationId: store_products_trending_retrieve
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/sub_categories/:
+    get:
+      operationId: store_sub_categories_retrieve
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: store_sub_categories_create
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /store/sub_categories/{index}/:
+    get:
+      operationId: store_sub_categories_retrieve_2
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: store_sub_categories_update
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: store_sub_categories_destroy
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /store/sub_categories/{index}/products/:
+    get:
+      operationId: store_sub_categories_products_retrieve
+      parameters:
+      - in: path
+        name: index
+        schema:
+          type: integer
+        required: true
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /store/webhook/:
+    post:
+      operationId: store_webhook_create
+      tags:
+      - store
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /swagger/schema/:
+    get:
+      operationId: swagger_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - swagger
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+components:
+  schemas:
+    ChangePassword:
+      type: object
+      properties:
+        old_password:
+          type: string
+        new_password:
+          type: string
+      required:
+      - new_password
+      - old_password
+    CreateUser:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        password:
+          type: string
+          maxLength: 128
+        phone:
+          type: string
+          nullable: true
+          maxLength: 11
+      required:
+      - email
+      - password
+    PatchedChangePassword:
+      type: object
+      properties:
+        old_password:
+          type: string
+        new_password:
+          type: string
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        phone:
+          type: string
+          nullable: true
+          maxLength: 11
+        role:
+          type: string
+          nullable: true
+          maxLength: 7
+      required:
+      - email
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

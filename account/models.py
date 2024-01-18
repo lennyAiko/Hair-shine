@@ -2,10 +2,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 # Create your models here.
-    
+
+
 class UserManager(BaseUserManager):
 
-    def _create_user(self, role: str, phone: str, first_name: str, last_name: str, email: str, password: str=None, is_staff=True, is_superuser=False, is_verified=False) -> "User":
+    def _create_user(self, role: str, phone: str, first_name: str, last_name: str, email: str, password: str = None, is_staff=True, is_superuser=False, is_verified=False) -> "User":
         if not email:
             raise ValueError("User must have an email")
         if not first_name:
@@ -14,7 +15,7 @@ class UserManager(BaseUserManager):
             raise ValueError("User must have an last name")
         if not phone:
             raise ValueError("User must have a phone number")
-        
+
         user = self.model(email=self.normalize_email(email))
         user.first_name = first_name
         user.last_name = last_name
@@ -28,21 +29,21 @@ class UserManager(BaseUserManager):
         user.save()
 
         return user
-    
-    def create_user(self, phone: str, first_name: str, last_name: str, email: str, password: str=None, is_staff=True, is_superuser=False, is_verified=False) -> "User":
+
+    def create_user(self, phone: str, first_name: str, last_name: str, email: str, password: str = None, is_staff=True, is_superuser=False, is_verified=False, role="client") -> "User":
         user = self._create_user(
             first_name=first_name,
             last_name=last_name,
             email=email,
             password=password,
             phone=phone,
-            role="client"
+            role=role
         )
         user.save()
 
         return user
-    
-    def create_superuser(self, phone: str, first_name: str, last_name: str, email: str, password: str=None, is_staff=True, is_superuser=True, is_verified=True) -> "User":
+
+    def create_superuser(self, phone: str, first_name: str, last_name: str, email: str, password: str = None, is_staff=True, is_superuser=True, is_verified=True, role="admin") -> "User":
         user = self._create_user(
             first_name=first_name,
             last_name=last_name,
@@ -52,12 +53,13 @@ class UserManager(BaseUserManager):
             is_staff=True,
             is_superuser=True,
             is_verified=True,
-            role="admin"
+            role=role
         )
         user.save()
 
         return user
-    
+
+
 class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
     first_name = models.CharField(max_length=150, null=True, blank=True)
@@ -77,10 +79,10 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
-    
+
     def find_by_email(self, email):
         return self.objects.filter(email=email)
-    
+
     def get_details(self, email):
         user = self.objects.get(email=email)
         data = {
@@ -95,8 +97,7 @@ class User(AbstractUser):
     @property
     def isSuperuser(self):
         return self.is_superuser
-    
+
     @property
     def isVerified(self):
         return self.is_verified
-    

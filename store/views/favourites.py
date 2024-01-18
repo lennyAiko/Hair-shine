@@ -1,11 +1,11 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from drf_yasg.utils import swagger_auto_schema
 
 from ..serializers import FavouriteSerializer, FavItemSerializer, GetFavItemSerializer
 from ..models import FavItem, Favourite
 from ..utils import Actions
+
 
 def create(user):
     try:
@@ -16,7 +16,7 @@ def create(user):
 
     return query
 
-@swagger_auto_schema(methods=['get'], request_body=FavouriteSerializer)
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get(req):
@@ -34,7 +34,7 @@ def get(req):
 
     return Response(data, status)
 
-@swagger_auto_schema(methods=['post'], request_body=FavItemSerializer)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_item(req):
@@ -59,19 +59,21 @@ def add_item(req):
 
     return Response(data, status)
 
-@swagger_auto_schema(methods=['get', 'put', 'delete'])
+
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def get_update_delete_item(req, index):
 
     if req.method == 'GET':
-        data, status = Actions.get_single(serializer=GetFavItemSerializer, model=FavItem, index=index)
+        data, status = Actions.get_single(
+            serializer=GetFavItemSerializer, model=FavItem, index=index)
 
     if req.method == 'DELETE':
         data, status = Actions.delete(model=FavItem, index=index)
 
     if req.method == 'PUT':
-        data, status = Actions.update(serializer=GetFavItemSerializer, model=FavItem, index=index, data=req.data, item=True)
+        data, status = Actions.update(
+            serializer=GetFavItemSerializer, model=FavItem, index=index, data=req.data, item=True)
 
     data = {
         "status": status,

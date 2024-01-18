@@ -22,21 +22,11 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from rest_framework import permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
 
-schema_view = get_schema_view(
-   openapi.Info(
-      title="Hairsense API",
-      default_version='v1',
-      description="This is the backend API",
-      terms_of_service="https://www.google.com/policies/terms/",
-      contact=openapi.Contact(email="lennyaik017@gmail.com"),
-      license=openapi.License(name="BSD License"),
-   ),
-   public=True,
-   permission_classes=[permissions.AllowAny],
-)
+from rest_framework_swagger.views import get_swagger_view
+from rest_framework.schemas import get_schema_view as gsv
+
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
     # admin
@@ -45,14 +35,19 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
 
     # custom apps
-    re_path(r'^accounts/', include('account.urls')),
-    re_path(r'^store/', include('store.urls')),
+    path('accounts/', include('account.urls')),
+    path('store/', include('store.urls')),
 
-    # swagger and redoc - documentation
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc')
-    
+    # swagger
+    path('swagger/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('swagger/schema/docs/',
+         SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += staticfiles_urlpatterns()
+
+if settings.DEBUG:
+    from django.conf.urls.static import static
+    urlpatterns += static(settings.STATIC_URL,
+                          document_root=settings.STATIC_ROOT)
