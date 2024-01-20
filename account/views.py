@@ -5,28 +5,31 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 
-from .serializers import CreateUserSerializer, ChangePasswordSerializer, UserSerializer
+from .serializers import CreateUserSerializer, ChangePasswordSerializer, UserSerializer, SignInSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from social_django.utils import psa
 
 from drf_spectacular.utils import extend_schema
 
 
-@api_view(['GET'])
-def user_role(user):
-    if user.isSuperuser:
-        role = "admin"
-    else:
-        role = "client"
+# @api_view(['GET'])
+# def user_role(user):
+#     if user.isSuperuser:
+#         role = "admin"
+#     else:
+#         role = "client"
 
-    return role
+#     return role
 
 
 def get_user_object(query):
-    print(query)
     try:
         user = User.objects.get(email=query)
-        return user
+        if user.isSuperuser:
+            role = "admin"
+        else:
+            role = "client"
+        return user, role
     except User.DoesNotExist:
         return False
 
@@ -40,7 +43,7 @@ def register_user(req):
     An endpoint for creating user
     """
 
-    get_user = get_user_object(req.data['email'])
+    get_user, role = get_user_object(req.data['email'])
     if get_user:
         return Response({"status": 409, "message": "this user exists already"}, 409)
     else:
@@ -53,11 +56,11 @@ def register_user(req):
             return Response({"status": 201, "message": "proceed to login"}, 201)
 
 
-@extend_schema(request=CreateUserSerializer)
+@extend_schema(request=SignInSerializer, responses=UserSerializer)
 @api_view(['POST'])
 def login_user(req):
     if req.method == "POST":
-        user = get_user_object(req.data['email'])
+        user, role = get_user_object(req.data['email'])
         if user == False:
             data = {
                 "status": 404,
@@ -70,7 +73,7 @@ def login_user(req):
             token = RefreshToken.for_user(user)
             data = {
                 'status': 200,
-                'role': user_role(user),
+                'role': role,
                 'refresh': str(token),
                 'access': str(token.access_token)
             }

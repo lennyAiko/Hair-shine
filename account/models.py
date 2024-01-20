@@ -80,6 +80,11 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
 
+    # def get_full_details(self):
+    #     return {
+    #         self.email, self.first_name, self.last_name, self.phone, self.role
+    #     }
+
     def find_by_email(self, email):
         return self.objects.filter(email=email)
 
