@@ -31,7 +31,7 @@ def get_user_object(query):
             role = "client"
         return user, role
     except User.DoesNotExist:
-        return False
+        return False, "client"
 
 # Create your views here.
 
