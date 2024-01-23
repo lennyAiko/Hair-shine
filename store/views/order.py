@@ -84,7 +84,7 @@ def create_get(req):
             payload = {
                 "email": str(req.user.email),
                 "amount": int(req.data['amount']),
-                "callback": "https://www.hairsenseretail.com/my_account",
+                "callback": "https://localhost:3000/my_account",
                 "currency": "NGN",
                 "description": "Payment for HairSense Retail",
                 "meta": "test meta",
