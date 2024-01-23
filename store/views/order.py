@@ -74,9 +74,7 @@ def create_get(req):
         query = Order.objects.filter(user=req.user)
         serializer = GetOrderSerializer(query, many=True)
 
-        data, status = serializer.data[0], 200
-        data['products'] = list(Cart.objects.get(
-            user=req.user).product_item.all().values())
+        data, status = serializer.data, 200
         data = {
             "status": status,
             "data": data
