@@ -4,8 +4,10 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 
+
 def upload_to(instance, filename):
     return 'images/{filename}'.format(filename=filename)
+
 
 def default_policy():
     try:
@@ -16,6 +18,7 @@ def default_policy():
         except:
             pass
 
+
 def default_sub():
     try:
         return SubCategory.objects.get(name="Uncategorized").pk
@@ -24,6 +27,7 @@ def default_sub():
             SubCategory.objects.create(name="Uncategorized")
         except:
             pass
+
 
 def default_product():
     try:
@@ -34,6 +38,7 @@ def default_product():
         except:
             pass
 
+
 class Category(models.Model):
     name = models.CharField(max_length=150, unique=True)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -42,25 +47,30 @@ class Category(models.Model):
     def __str__(self) -> str:
         return self.name
 
+
 class SubCategory(models.Model):
-    category = models.ForeignKey(Category, related_name='sub_category', on_delete=models.PROTECT,db_constraint=False)
+    category = models.ForeignKey(
+        Category, related_name='sub_category', on_delete=models.PROTECT, db_constraint=False)
     name = models.CharField(max_length=150, unique=True)
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return self.name
-    
+
     @property
     def category_name(self):
         return self.category.name
-    
+
+
 class Product(models.Model):
     name = models.CharField(max_length=150, unique=True)
     actual_price = models.IntegerField(default=0)
-    sales_price = models.IntegerField(null=True, blank=True, default=0) #might go off
+    sales_price = models.IntegerField(
+        null=True, blank=True, default=0)  # might go off
     desc = models.TextField()
-    sub_category = models.ForeignKey(SubCategory, related_name='product', on_delete=models.PROTECT,db_constraint=False)
+    sub_category = models.ForeignKey(
+        SubCategory, related_name='product', on_delete=models.PROTECT, db_constraint=False)
     views = models.IntegerField(blank=True, null=True, default=0)
     product_img = models.ImageField(upload_to=upload_to, blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -68,7 +78,7 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return self.name
-    
+
     @property
     def sub_category_name(self):
         return self.sub_category.name
@@ -86,9 +96,12 @@ class Product(models.Model):
 
     # get comments
 
+
 class Comment(models.Model):
-    commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment')
-    product = models.ForeignKey(Product, related_name='comment', on_delete=models.PROTECT, db_constraint=False)
+    commenter = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='comment')
+    product = models.ForeignKey(
+        Product, related_name='comment', on_delete=models.PROTECT, db_constraint=False)
     comment = models.TextField()
     rate = models.IntegerField(
         default=1,
@@ -99,46 +112,57 @@ class Comment(models.Model):
 
     def __str__(self) -> str:
         return self.comment[:20]
-    
+
     @property
     def product_name(self):
         return self.product.name
-    
+
+
 class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='cart')
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return f"{self.user.email}'s cart"
 
+
 class ProductItem(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_item')
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name='product_item')
     quantity = models.IntegerField()
     amount = models.IntegerField(null=True, blank=True)
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='product_item')
+    cart = models.ForeignKey(
+        Cart, on_delete=models.CASCADE, related_name='product_item')
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return f"{self.cart.user.email}'s product item - {self.product.name}"
 
+
 class Favourite(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='favourite')
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='favourite')
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return f"{self.user.email}'s favourite"
 
+
 class FavItem(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product')
-    favourite = models.ForeignKey(Favourite, on_delete=models.CASCADE, related_name='favourite')
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name='product')
+    favourite = models.ForeignKey(
+        Favourite, on_delete=models.CASCADE, related_name='favourite')
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return f"{self.favourite.user.email}'s favourite item"
+
 
 class Order(models.Model):
     STATUS = (
@@ -147,7 +171,13 @@ class Order(models.Model):
         ('delivered', 'Order Delivered')
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='order')
+    METHOD = (
+        ('cod', 'Cash On Delivery'),
+        ('online', 'Online Payment'),
+    )
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='order')
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     products = models.ManyToManyField(Product, related_name="ordered_products")
@@ -155,15 +185,17 @@ class Order(models.Model):
     address = models.TextField()
     state = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
-    method = models.CharField(max_length=40)
+    method = models.CharField(max_length=40, choices=METHOD, default='cod')
     amount = models.IntegerField(null=True, blank=True)
-    status = models.CharField(choices=STATUS, max_length=32, default='received')
+    status = models.CharField(
+        choices=STATUS, max_length=32, default='received')
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return f"{self.user.email}'s order"
-    
+
+
 class Charge(models.Model):
     status = models.CharField(max_length=40)
     transaction_ref = models.CharField(max_length=100)

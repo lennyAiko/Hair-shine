@@ -3,11 +3,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from ..serializers import OrderSerializer, GetOrderSerializer, ChargeSerializer, TransferSerializer
-from ..models import Order
+from ..models import Order, Cart
 from ..utils import Actions, ReadOnly
 import json
 import requests
 from decouple import config
+from drf_spectacular.utils import extend_schema
 
 SECRET_KEY = config('SECRET_KEY')
 HYDROGEN_TEST_URL = config('HYDROGEN_TEST_URL')
@@ -38,6 +39,14 @@ def create(user):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_products(req):
+    user = req.user
+    data = list(Cart.objects.get(user=user).product_item.all().values())
+    return Response(data, 200)
+
+
+@api_view(['GET'])
 @permission_classes([IsAdminUser])
 def get_all(req):
 
@@ -55,6 +64,7 @@ def get_all(req):
     return Response(data, status)
 
 
+@extend_schema(request=OrderSerializer)
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def create_get(req):
@@ -75,6 +85,8 @@ def create_get(req):
     if req.method == "POST":
 
         req.data['user'] = req.user.id
+        req.data['products'] = list(Cart.objects.get(
+            user=req.user.id).product_item.all().values())
 
         data, status = Actions.create(
             serializer=OrderSerializer, data=req.data)

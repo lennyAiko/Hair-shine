@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from ..serializers import CartSerializer, ProductItemSerializer, GetProductItemSerializer
 from ..models import Cart, ProductItem, Product
 from ..utils import Actions
+from drf_spectacular.utils import extend_schema
 
 
 def create(user):
@@ -17,6 +18,7 @@ def create(user):
     return query
 
 
+@extend_schema(responses=CartSerializer)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get(req):
@@ -35,6 +37,7 @@ def get(req):
     return Response(data, status)
 
 
+@extend_schema(request=ProductItemSerializer)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_items(req):

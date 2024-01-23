@@ -21,27 +21,29 @@ urlpatterns = [
     path('products/new/', product.new_products),
     path('products/trending/', product.trending_products),
 
-    #comments
+    # comments
     path('comments/', comments.create_get),
     path('comments/<int:index>/', comments.get_update_delete),
 
-    #cart
+    # cart
     path('cart/', cart.get),
     path('cart/items/', cart.add_items),
     path('cart/items/<int:index>/', cart.get_update_delete_item),
     path('cart/empty/', cart.empty_cart),
 
-    #order
+    # order
     path('orders/all/', order.get_all),
     path('orders/', order.create_get),
     path('orders/<int:index>/', order.get_update_delete_item),
 
-    #favorites
+    # favorites
     path('favourite/', favourites.get),
     path('favourite/items/', favourites.add_item),
     path('favourite/items/<int:index>/', favourites.get_update_delete_item),
 
     path('webhook/', order.webhook),
-    path('confirm_payment/', order.confirm_payment)
+    path('confirm_payment/', order.confirm_payment),
+
+    path('get_cart_products/', order.get_products)
 
 ]
