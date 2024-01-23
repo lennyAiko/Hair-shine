@@ -158,7 +158,7 @@ class OrderSerializer(ModelSerializer):
 
 
 class GetOrderSerializer(ModelSerializer):
-    products = serializers.StringRelatedField(many=True, allow_empty=False)
+    # products = ProductItemSerializer(many=True, read_only=True)
     user = serializers.ReadOnlyField(source='user.email')
 
     class Meta:

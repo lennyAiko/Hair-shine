@@ -72,9 +72,11 @@ def create_get(req):
     if req.method == "GET":
 
         query = Order.objects.filter(user=req.user)
-        serializer = OrderSerializer(query, many=True)
+        serializer = GetOrderSerializer(query, many=True)
 
-        data, status = serializer.data, 200
+        data, status = serializer.data[0], 200
+        data['products'] = list(Cart.objects.get(
+            user=req.user).product_item.all().values())
         data = {
             "status": status,
             "data": data
