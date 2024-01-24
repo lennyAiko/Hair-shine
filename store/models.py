@@ -121,6 +121,7 @@ class Comment(models.Model):
 class Cart(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='cart')
+    total_amount = models.CharField(max_length=150)
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

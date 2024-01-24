@@ -37,12 +37,15 @@ def get(req):
     return Response(data, status)
 
 
-@extend_schema(request=ProductItemSerializer)
+@extend_schema(request=CartSerializer)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def add_items(req):
+def add(req):
 
     query = create(req.user)
+
+    # product
+    # total amount
 
     data, status = Actions.bulk(
         model=ProductItem, data=req.data, cart=query, second_model=Product)
@@ -55,27 +58,27 @@ def add_items(req):
     return Response(data, status)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
-def get_update_delete_item(req, index):
+# @api_view(['GET', 'PUT', 'DELETE'])
+# @permission_classes([IsAuthenticated])
+# def get_update_delete_item(req, index):
 
-    if req.method == 'GET':
-        data, status = Actions.get_single(
-            serializer=GetProductItemSerializer, model=ProductItem, index=index)
+#     if req.method == 'GET':
+#         data, status = Actions.get_single(
+#             serializer=GetProductItemSerializer, model=ProductItem, index=index)
 
-    if req.method == 'DELETE':
-        data, status = Actions.delete(model=ProductItem, index=index)
+#     if req.method == 'DELETE':
+#         data, status = Actions.delete(model=ProductItem, index=index)
 
-    if req.method == 'PUT':
-        data, status = Actions.update(
-            serializer=GetProductItemSerializer, model=ProductItem, index=index, data=req.data, item=True)
+#     if req.method == 'PUT':
+#         data, status = Actions.update(
+#             serializer=GetProductItemSerializer, model=ProductItem, index=index, data=req.data, item=True)
 
-    data = {
-        "status": status,
-        "data": data
-    }
+#     data = {
+#         "status": status,
+#         "data": data
+#     }
 
-    return Response(data, status)
+#     return Response(data, status)
 
 
 @api_view(['GET'])
