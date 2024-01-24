@@ -85,8 +85,8 @@ def create_get(req):
     if req.method == "POST":
 
         req.data['user'] = req.user.id
-        req.data['products'] = list(Cart.objects.get(
-            user=req.user.id).product_item.all().values())
+        # req.data['products'] = list(Cart.objects.get(
+        #     user=req.user.id).product_item.all().values())
 
         data, status = Actions.create(
             serializer=OrderSerializer, data=req.data)
@@ -96,7 +96,7 @@ def create_get(req):
             payload = {
                 "email": str(req.user.email),
                 "amount": int(req.data['amount']),
-                "callback": "https://localhost:3000/my_account",
+                "callback": "https://www.hairsenseretail.com//my_account",
                 "currency": "NGN",
                 "description": "Payment for HairSense Retail",
                 "meta": "test meta",

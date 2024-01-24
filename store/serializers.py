@@ -72,6 +72,12 @@ class CreateProductSerializer(ModelSerializer):
                   'views', 'product_img', 'sub_category', 'comment')
 
 
+class GetProductSerializer(ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+
 class ProductCommentSerializer(ModelSerializer):
     product_name = serializers.ReadOnlyField(source='product.name')
 
@@ -144,26 +150,26 @@ class FavouriteSerializer(ModelSerializer):
 
 
 class OrderSerializer(ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), many=False)
+    # user = serializers.PrimaryKeyRelatedField(
+    #     queryset=User.objects.all(), many=False)
     # products = serializers.StringRelatedField(many=True, allow_empty=False)
-    # products = ProductItemSerializer(many=True)
+    products = CreateProductSerializer(many=True)
 
     class Meta:
         model = Order
-        fields = ('id', 'user', 'first_name', 'last_name', 'phone',
-                  'address', 'state', 'city', 'method', 'status', 'amount')
-        # fields = ('id', 'user', 'first_name', 'last_name', 'products',
-        #   'phone', 'address', 'state', 'city', 'method', 'status', 'amount')
+        # fields = ('id', 'user', 'first_name', 'last_name', 'phone',
+        #           'address', 'state', 'city', 'method', 'status', 'amount')
+        fields = ('id', 'first_name', 'last_name', 'products',
+                  'phone', 'address', 'state', 'city', 'method', 'status', 'amount')
 
 
 class GetOrderSerializer(ModelSerializer):
-    # products = ProductItemSerializer(many=True, read_only=True)
-    user = serializers.ReadOnlyField(source='user.email')
+    products = GetProductSerializer(many=True)
+    # user = serializers.ReadOnlyField(source='user.email')
 
     class Meta:
         model = Order
-        fields = ('id', 'user', 'first_name', 'last_name', 'products',
+        fields = ('id', 'first_name', 'last_name', 'products',
                   'phone', 'address', 'state', 'city', 'method', 'status', 'amount')
 
 # get all products under a category
