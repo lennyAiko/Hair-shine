@@ -18,45 +18,40 @@ def create(user):
     return query
 
 
-@extend_schema(responses=CartSerializer)
-@api_view(['GET'])
+@extend_schema(request=CartSerializer, responses=CartSerializer)
+@api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
-def get(req):
+def create_get(req):
 
-    query = create(req.user)
+    if req.method == "GET":
 
-    serializer = CartSerializer(query, many=False)
+        query = create(req.user)
 
-    data, status = serializer.data, 200
+        serializer = CartSerializer(query, many=False)
 
-    data = {
-        "status": status,
-        "data": data
-    }
+        data, status = serializer.data, 200
+
+        data = {
+            "status": status,
+            "data": data
+        }
+
+    if req.method == "POST":
+
+        try:
+            query = Cart.objects.get(user=req.user)
+            data, status = Actions.update(
+                CartSerializer, Cart, query.id, req.data)
+        except:
+            req.data['user'] = req.user
+            data, status = Actions.create(req.data, CartSerializer)
+
+        data = {
+            "status": status,
+            "data": data
+        }
 
     return Response(data, status)
-
-
-@extend_schema(request=CartSerializer)
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def add(req):
-
-    query = create(req.user)
-
-    # product
-    # total amount
-
-    data, status = Actions.bulk(
-        model=ProductItem, data=req.data, cart=query, second_model=Product)
-
-    data = {
-        "status": status,
-        "data": data
-    }
-
-    return Response(data, status)
-
 
 # @api_view(['GET', 'PUT', 'DELETE'])
 # @permission_classes([IsAuthenticated])

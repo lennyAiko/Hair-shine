@@ -26,8 +26,7 @@ urlpatterns = [
     path('comments/<int:index>/', comments.get_update_delete),
 
     # cart
-    path('cart/', cart.get),
-    path('cart/', cart.add),
+    path('cart/', cart.create_get),
     # path('cart/items/<int:index>/', cart.get_update_delete_item),
     path('cart/empty/', cart.empty_cart),
 

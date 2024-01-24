@@ -112,11 +112,11 @@ class GetProductItemSerializer(ModelSerializer):
 class CartSerializer(serializers.ModelSerializer):
     products = CreateProductSerializer(many=True)
     user = serializers.ReadOnlyField(source='user.email')
-    total_amount = serializers.CharField()
+    total_amount = serializers.IntegerField()
 
     class Meta:
         model = Cart
-        fields = ('id', 'user', 'products', 'total_amount')
+        fields = ('user', 'products', 'total_amount')
 
 
 class FavItemSerializer(ModelSerializer):

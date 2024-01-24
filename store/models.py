@@ -63,6 +63,17 @@ class SubCategory(models.Model):
         return self.category.name
 
 
+class Cart(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='cart')
+    total_amount = models.IntegerField(default=0, blank=True, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.user.email}'s cart"
+
+
 class Product(models.Model):
     name = models.CharField(max_length=150, unique=True)
     actual_price = models.IntegerField(default=0)
@@ -116,17 +127,6 @@ class Comment(models.Model):
     @property
     def product_name(self):
         return self.product.name
-
-
-class Cart(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name='cart')
-    total_amount = models.CharField(max_length=150)
-    date_added = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self) -> str:
-        return f"{self.user.email}'s cart"
 
 
 class ProductItem(models.Model):
