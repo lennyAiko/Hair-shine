@@ -178,12 +178,12 @@ class OrderSerializer(ModelSerializer):
 
 
 class GetOrderSerializer(ModelSerializer):
-    products = GetProductSerializer(many=True)
+    product = GetProductSerializer(many=True)
     # user = serializers.ReadOnlyField(source='user.email')
 
     class Meta:
         model = Order
-        fields = ('id', 'first_name', 'last_name', 'products',
+        fields = ('first_name', 'last_name', 'product',
                   'phone', 'address', 'state', 'city', 'method', 'status', 'amount')
 
 # get all products under a category
