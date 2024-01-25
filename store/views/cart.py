@@ -80,7 +80,7 @@ def create_get(req):
 @permission_classes([IsAuthenticated])
 def empty_cart(req):
 
-    req.user.cart.product_item.all().delete()
+    req.user.cart.delete()
 
     data = {
         "status": 200,

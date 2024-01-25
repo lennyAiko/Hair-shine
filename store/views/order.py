@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
-from ..serializers import OrderSerializer, GetOrderSerializer
+from ..serializers import OrderSerializer, GetOrderSerializer, GetCartSerializer
 # TransactionSerializer
 from ..models import Order, Cart
 from ..utils import Actions, ReadOnly
@@ -43,7 +43,7 @@ def create(user):
 @permission_classes([IsAuthenticated])
 def get_products(req):
     user = req.user
-    data = list(Cart.objects.get(user=user).product_item.all().values())
+    data = list(Cart.objects.get(user=user).product.all().values())
     return Response(data, 200)
 
 
@@ -73,12 +73,19 @@ def create_get(req):
     if req.method == "GET":
 
         query = Order.objects.filter(user=req.user)
+        # cart = Cart.objects.get_or_create(user=req.user)
         serializer = GetOrderSerializer(query, many=True)
+        # cart_serializer = GetCartSerializer(cart)
+
+        # print(cart_serializer)
 
         data, status = serializer.data, 200
+        # cart_data = cart_serializer.data
         data = {
             "status": status,
-            "data": data
+            "order": data,
+            "products": list(req.user.cart.product.all().values())
+
         }
 
         return Response(data, status)
@@ -110,8 +117,8 @@ def create_get(req):
 
             return Response(
                 {
-                    "data": {"url": res['data']['url']},
-                    "message": "Successfully fetched payment URL"
+                    "data": {"url": res['data']['url'] if res['data']['url'] else ""},
+                    "message": "Successfully fetched payment URL" if res['data']['url'] else "Failed to fetch payment URL",
                 },
                 200)
 
@@ -154,18 +161,17 @@ def webhook(req):
 
     order = Order.objects.get(user=req.data["customerEmail"])
 
-    if req.data['event'] == "charge.success":
-        payload = {
-            'status': req.data['status'],
-            'transaction_ref': req.data['data']['transactionRef'],
-            'payment_type': req.data['paymentType'],
-            'amount': req.data['amount'],
-            'customer_email': req.data['customerEmail'],
-        }
+    payload = {
+        'transaction_status': req.data['status'],
+        'transaction_id': req.data['data']['transactionRef'],
+        'payment_type': req.data['paymentType'],
+        'amount': req.data['amount'],
+    }
 
-        # serializer = TransactionSerializer(data=payload)
-        # serializer.is_valid(raise_exception=True)
-        # serializer.save()
+    data, status = Actions.update(OrderSerializer, Order, order.id, payload)
+    # serializer = TransactionSerializer(data=payload)
+    # serializer.is_valid(raise_exception=True)
+    # serializer.save()
 
     return Response(200)
 

@@ -87,9 +87,9 @@ class Order(models.Model):
     )
 
     PAYMENT_STATUS = (
-        ('fail', 'Failed'),
-        ('pend', 'Pending'),
-        ('success', 'Successful')
+        ('failed', 'Failed'),
+        ('pending', 'Pending'),
+        ('successful', 'Successful')
     )
 
     user = models.ForeignKey(
@@ -106,7 +106,12 @@ class Order(models.Model):
     status = models.CharField(
         choices=STATUS, max_length=32, default='received')
     payment = models.CharField(
-        choices=PAYMENT_STATUS, max_length=32, default='pend')
+        choices=PAYMENT_STATUS, max_length=32, default='pending')
+    transaction_status = models.CharField(
+        max_length=32, null=True, blank=True
+    )
+    transaction_id = models.CharField(max_length=100, null=True, blank=True)
+    payment_type = models.CharField(max_length=100, null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
