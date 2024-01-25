@@ -2,7 +2,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
-from ..serializers import OrderSerializer, GetOrderSerializer, ChargeSerializer, TransferSerializer
+from ..serializers import OrderSerializer, GetOrderSerializer
+# TransactionSerializer
 from ..models import Order, Cart
 from ..utils import Actions, ReadOnly
 import json
@@ -151,6 +152,8 @@ def webhook(req):
     if req.method != 'POST':
         return Response(status=403)
 
+    order = Order.objects.get(user=req.data["customerEmail"])
+
     if req.data['event'] == "charge.success":
         payload = {
             'status': req.data['status'],
@@ -160,9 +163,9 @@ def webhook(req):
             'customer_email': req.data['customerEmail'],
         }
 
-        serializer = ChargeSerializer(data=payload)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        # serializer = TransactionSerializer(data=payload)
+        # serializer.is_valid(raise_exception=True)
+        # serializer.save()
 
     return Response(200)
 

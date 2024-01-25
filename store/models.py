@@ -176,14 +176,20 @@ class Order(models.Model):
 
     METHOD = (
         ('cod', 'Cash On Delivery'),
-        ('online', 'Online Payment'),
+        ('pickup', 'Pickup')
+    )
+
+    PAYMENT_STATUS = (
+        ('fail', 'Failed'),
+        ('pend', 'Pending'),
+        ('success', 'Successful')
     )
 
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='order')
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    products = models.ManyToManyField(Product, related_name="ordered_products")
+    # products = models.ManyToManyField(Product, related_name="ordered_products")
     phone = models.CharField(max_length=50)
     address = models.TextField()
     state = models.CharField(max_length=50)
@@ -192,6 +198,8 @@ class Order(models.Model):
     amount = models.IntegerField(null=True, blank=True)
     status = models.CharField(
         choices=STATUS, max_length=32, default='received')
+    payment = models.CharField(
+        choices=PAYMENT_STATUS, max_length=32, default='pend')
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -199,13 +207,13 @@ class Order(models.Model):
         return f"{self.user.email}'s order"
 
 
-class Charge(models.Model):
-    status = models.CharField(max_length=40)
-    transaction_ref = models.CharField(max_length=100)
-    amount = models.IntegerField()
-    payment_type = models.CharField(max_length=30)
-    customer_email = models.EmailField()
-    date_added = models.DateTimeField(auto_now_add=True)
+# class Transaction(models.Model):
+#     status = models.CharField(max_length=40)
+#     transaction_ref = models.CharField(max_length=100)
+#     amount = models.IntegerField()
+#     payment_type = models.CharField(max_length=30)
+#     customer_email = models.EmailField()
+#     date_added = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self) -> str:
-        return f'{self.customer_email} - {self.event}'
+#     def __str__(self) -> str:
+#         return f'{self.customer_email} - {self.event}'

@@ -2,7 +2,9 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
 from account.models import User
-from .models import Category, SubCategory, Product, Comment, Cart, ProductItem, FavItem, Favourite, Order, Charge
+from .models import Category, SubCategory, Product, Comment, Cart, ProductItem, FavItem, Favourite, Order
+
+# Transaction
 
 # create category
 
@@ -205,13 +207,13 @@ class AllSubCategorySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'sub_category')
 
 
-class ChargeSerializer(ModelSerializer):
+# class TransactionSerializer(ModelSerializer):
 
-    class Meta:
-        model = Charge
-        fields = '__all__'
+#     class Meta:
+#         model = Transaction
+#         fields = '__all__'
 
 
-class TransferSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    amount = serializers.IntegerField()
+# class TransferSerializer(serializers.Serializer):
+#     email = serializers.EmailField()
+#     amount = serializers.IntegerField()
