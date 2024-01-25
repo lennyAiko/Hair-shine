@@ -82,6 +82,8 @@ class Product(models.Model):
     desc = models.TextField()
     sub_category = models.ForeignKey(
         SubCategory, related_name='product', on_delete=models.PROTECT, db_constraint=False)
+    cart = models.ForeignKey(
+        Cart, on_delete=models.CASCADE, related_name='product', blank=True, null=True)
     views = models.IntegerField(blank=True, null=True, default=0)
     product_img = models.ImageField(upload_to=upload_to, blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)

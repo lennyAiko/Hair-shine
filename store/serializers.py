@@ -110,13 +110,24 @@ class GetProductItemSerializer(ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
-    products = CreateProductSerializer(many=True)
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(), many=True)
     user = serializers.ReadOnlyField(source='user.email')
     total_amount = serializers.IntegerField()
 
     class Meta:
         model = Cart
-        fields = ('user', 'products', 'total_amount')
+        fields = ('user', 'product', 'total_amount')
+
+
+class GetCartSerializer(serializers.ModelSerializer):
+
+    product = CreateProductSerializer(many=True)
+    # total_amount = serializers.IntegerField()
+
+    class Meta:
+        model = Cart
+        fields = ('user', 'product', 'total_amount')
 
 
 class FavItemSerializer(ModelSerializer):
