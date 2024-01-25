@@ -167,14 +167,14 @@ class OrderSerializer(ModelSerializer):
     # user = serializers.PrimaryKeyRelatedField(
     #     queryset=User.objects.all(), many=False)
     # products = serializers.StringRelatedField(many=True, allow_empty=False)
-    products = CreateProductSerializer(many=True)
+    # products = CreateProductSerializer(many=True)
 
     class Meta:
         model = Order
-        # fields = ('id', 'user', 'first_name', 'last_name', 'phone',
-        #           'address', 'state', 'city', 'method', 'status', 'amount')
-        fields = ('id', 'first_name', 'last_name', 'products',
-                  'phone', 'address', 'state', 'city', 'method', 'status', 'amount')
+        fields = ('id', 'user', 'first_name', 'last_name', 'phone',
+                  'address', 'state', 'city', 'method', 'status', 'amount')
+        # fields = ('id', 'first_name', 'last_name', 'products',
+        #           'phone', 'address', 'state', 'city', 'method', 'status', 'amount')
 
 
 class GetOrderSerializer(ModelSerializer):
