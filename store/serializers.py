@@ -2,7 +2,9 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
 from account.models import User
-from .models import Category, SubCategory, Product, Comment, Cart, FavItem, Favourite, Order, Charge
+from .models import Category, SubCategory, Product, Comment, Cart, FavItem, Favourite, Order
+
+# Transaction
 
 # create category
 
@@ -129,7 +131,17 @@ class GetCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ('user', 'products', 'total_amount')
+        fields = ('user', 'product', 'total_amount')
+
+
+class GetCartSerializer(serializers.ModelSerializer):
+
+    product = CreateProductSerializer(many=True)
+    # total_amount = serializers.IntegerField()
+
+    class Meta:
+        model = Cart
+        fields = ('user', 'product', 'total_amount')
 
 
 class FavItemSerializer(ModelSerializer):
@@ -169,6 +181,7 @@ class OrderSerializer(ModelSerializer):
     products = CreateProductSerializer(many=True, required=False)
     # products = serializers.StringRelatedField(many=True, allow_empty=False)
     # products = CreateProductSerializer(many=True)
+    # products = CreateProductSerializer(many=True)
 
     class Meta:
         model = Order
@@ -179,12 +192,12 @@ class OrderSerializer(ModelSerializer):
 
 
 class GetOrderSerializer(ModelSerializer):
-    products = GetProductSerializer(many=True)
+    product = serializers.ReadOnlyField(source='product.id')
     # user = serializers.ReadOnlyField(source='user.email')
 
     class Meta:
         model = Order
-        fields = ('id', 'first_name', 'last_name', 'products',
+        fields = ('first_name', 'last_name', 'product',
                   'phone', 'address', 'state', 'city', 'method', 'status', 'amount')
 
 # get all products under a category
@@ -208,13 +221,13 @@ class AllSubCategorySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'sub_category')
 
 
-class ChargeSerializer(ModelSerializer):
+# class TransactionSerializer(ModelSerializer):
 
-    class Meta:
-        model = Charge
-        fields = '__all__'
+#     class Meta:
+#         model = Transaction
+#         fields = '__all__'
 
 
-class TransferSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    amount = serializers.IntegerField()
+# class TransferSerializer(serializers.Serializer):
+#     email = serializers.EmailField()
+#     amount = serializers.IntegerField()

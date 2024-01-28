@@ -2,7 +2,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
-from ..serializers import OrderSerializer, GetOrderSerializer, ChargeSerializer, TransferSerializer
+from ..serializers import OrderSerializer, GetOrderSerializer, GetCartSerializer
+# TransactionSerializer
 from ..models import Order, Cart
 from ..utils import Actions, ReadOnly
 import json
@@ -42,7 +43,7 @@ def create(user):
 @permission_classes([IsAuthenticated])
 def get_products(req):
     user = req.user
-    data = list(Cart.objects.get(user=user).product_item.all().values())
+    data = list(Cart.objects.get(user=user).product.all().values())
     return Response(data, 200)
 
 
@@ -75,9 +76,12 @@ def create_get(req):
         serializer = OrderSerializer(query, many=True)
 
         data, status = serializer.data, 200
+        # cart_data = cart_serializer.data
         data = {
             "status": status,
-            "data": data
+            "order": data,
+            "products": list(req.user.cart.product.all().values())
+
         }
 
         return Response(data, status)
@@ -152,18 +156,19 @@ def webhook(req):
     if req.method != 'POST':
         return Response(status=403)
 
-    if req.data['event'] == "charge.success":
-        payload = {
-            'status': req.data['status'],
-            'transaction_ref': req.data['data']['transactionRef'],
-            'payment_type': req.data['paymentType'],
-            'amount': req.data['amount'],
-            'customer_email': req.data['customerEmail'],
-        }
+    order = Order.objects.get(user=req.data["customerEmail"])
 
-        serializer = ChargeSerializer(data=payload)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+    payload = {
+        'transaction_status': req.data['status'],
+        'transaction_id': req.data['data']['transactionRef'],
+        'payment_type': req.data['paymentType'],
+        'amount': req.data['amount'],
+    }
+
+    data, status = Actions.update(OrderSerializer, Order, order.id, payload)
+    # serializer = TransactionSerializer(data=payload)
+    # serializer.is_valid(raise_exception=True)
+    # serializer.save()
 
     return Response(200)
 

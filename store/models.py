@@ -71,6 +71,11 @@ class Product(models.Model):
     desc = models.TextField()
     sub_category = models.ForeignKey(
         SubCategory, related_name='product', on_delete=models.PROTECT, db_constraint=False)
+    cart = models.ForeignKey(
+        Cart, on_delete=models.CASCADE, related_name='product', blank=True, null=True)
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name='product', blank=True, null=True
+    )
     views = models.IntegerField(blank=True, null=True, default=0)
     product_img = models.ImageField(upload_to=upload_to, blank=True, null=True)
     # cart = models.ForeignKey(
@@ -168,45 +173,13 @@ class FavItem(models.Model):
         return f"{self.favourite.user.email}'s favourite item"
 
 
-class Order(models.Model):
-    STATUS = (
-        ('received', 'Order Placed'),
-        ('delivery', 'Out for Delivery'),
-        ('delivered', 'Order Delivered')
-    )
+# class Transaction(models.Model):
+#     status = models.CharField(max_length=40)
+#     transaction_ref = models.CharField(max_length=100)
+#     amount = models.IntegerField()
+#     payment_type = models.CharField(max_length=30)
+#     customer_email = models.EmailField()
+#     date_added = models.DateTimeField(auto_now_add=True)
 
-    METHOD = (
-        ('cod', 'Cash On Delivery'),
-        ('online', 'Online Payment'),
-    )
-
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='order')
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    products = models.ManyToManyField(Product, related_name="ordered_products")
-    phone = models.CharField(max_length=50)
-    address = models.TextField()
-    state = models.CharField(max_length=50)
-    city = models.CharField(max_length=50)
-    method = models.CharField(max_length=40, choices=METHOD, default='cod')
-    amount = models.IntegerField(null=True, blank=True)
-    status = models.CharField(
-        choices=STATUS, max_length=32, default='received')
-    date_added = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self) -> str:
-        return f"{self.user.email}'s order"
-
-
-class Charge(models.Model):
-    status = models.CharField(max_length=40)
-    transaction_ref = models.CharField(max_length=100)
-    amount = models.IntegerField()
-    payment_type = models.CharField(max_length=30)
-    customer_email = models.EmailField()
-    date_added = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self) -> str:
-        return f'{self.customer_email} - {self.event}'
+#     def __str__(self) -> str:
+#         return f'{self.customer_email} - {self.event}'
