@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Product, Comment, SubCategory, Cart, Favourite, FavItem, Order, Charge
+from .models import Category, Product, Comment, SubCategory, Cart, Favourite, FavItem, Order
 # Register your models here.
 
 admin.site.register(Category)
