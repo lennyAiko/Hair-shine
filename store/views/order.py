@@ -71,8 +71,8 @@ def create_get(req):
 
     if req.method == "GET":
 
-        query = Order.objects.filter(user=req.user)
-        serializer = GetOrderSerializer(query, many=True)
+        query = Order.objects.filter(user=req.user.id)
+        serializer = OrderSerializer(query, many=True)
 
         data, status = serializer.data, 200
         data = {
@@ -85,8 +85,8 @@ def create_get(req):
     if req.method == "POST":
 
         req.data['user'] = req.user.id
-        # req.data['products'] = list(Cart.objects.get(
-        #     user=req.user.id).product_item.all().values())
+        req.data['products'] = list(Cart.objects.get(
+            user=req.user.id).product.all().values())
 
         data, status = Actions.create(
             serializer=OrderSerializer, data=req.data)
@@ -105,11 +105,10 @@ def create_get(req):
             res = post_requests(
                 f'{HYDROGEN_TEST_URL}/merchant/initiate-payment', payload)
 
-            print(res)
-
             return Response(
                 {
-                    "data": {"url": res['data']['url']},
+                    # "data": {"url": res['data']['url'] if res['data']['url'] else ""},
+
                     "message": "Successfully fetched payment URL"
                 },
                 200)
@@ -118,6 +117,8 @@ def create_get(req):
             "status": 500,
             "data": "Could not contact server"
         }
+
+        req.user.cart.product.all().delete()
 
         return Response(data, 500)
 

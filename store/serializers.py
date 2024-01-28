@@ -2,7 +2,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
 from account.models import User
-from .models import Category, SubCategory, Product, Comment, Cart, ProductItem, FavItem, Favourite, Order, Charge
+from .models import Category, SubCategory, Product, Comment, Cart, FavItem, Favourite, Order, Charge
 
 # create category
 
@@ -88,30 +88,43 @@ class ProductCommentSerializer(ModelSerializer):
 # create product item
 
 
-class ProductItemSerializer(ModelSerializer):
-    cart = serializers.PrimaryKeyRelatedField(
-        queryset=Cart.objects.all(), many=False)
-    product = serializers.PrimaryKeyRelatedField(
-        queryset=Product.objects.all(), many=False)
+# class ProductItemSerializer(ModelSerializer):
+#     cart = serializers.PrimaryKeyRelatedField(
+#         queryset=Cart.objects.all(), many=False)
+#     product = serializers.PrimaryKeyRelatedField(
+#         queryset=Product.objects.all(), many=False)
 
-    class Meta:
-        model = ProductItem
-        fields = ('id', 'quantity', 'amount', 'product', 'cart')
+#     class Meta:
+#         model = ProductItem
+#         fields = ('id', 'quantity', 'amount', 'product', 'cart')
 
-# get product item
+# # get product item
 
 
-class GetProductItemSerializer(ModelSerializer):
-    product = serializers.ReadOnlyField(source='product.name')
+# class GetProductItemSerializer(ModelSerializer):
+#     product = serializers.ReadOnlyField(source='product.name')
 
-    class Meta:
-        model = ProductItem
-        fields = ('id', 'quantity', 'amount', 'product')
+#     class Meta:
+#         model = ProductItem
+#         fields = ('id', 'quantity', 'amount', 'product')
 
 
 class CartSerializer(serializers.ModelSerializer):
+    products = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(), many=True, required=False)
+    # user = serializers.PrimaryKeyRelatedField(
+    #     queryset=User.objects.all(), many=False, required=False)
+    total_amount = serializers.IntegerField()
+
+    class Meta:
+        model = Cart
+        fields = ('products', 'total_amount')
+
+
+class GetCartSerializer(serializers.ModelSerializer):
     products = CreateProductSerializer(many=True)
-    user = serializers.ReadOnlyField(source='user.email')
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), many=False, required=False)
     total_amount = serializers.IntegerField()
 
     class Meta:
@@ -151,16 +164,17 @@ class FavouriteSerializer(ModelSerializer):
 
 
 class OrderSerializer(ModelSerializer):
-    # user = serializers.PrimaryKeyRelatedField(
-    #     queryset=User.objects.all(), many=False)
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), many=False, required=False)
+    products = CreateProductSerializer(many=True, required=False)
     # products = serializers.StringRelatedField(many=True, allow_empty=False)
-    products = CreateProductSerializer(many=True)
+    # products = CreateProductSerializer(many=True)
 
     class Meta:
         model = Order
-        # fields = ('id', 'user', 'first_name', 'last_name', 'phone',
+        # fields = ('first_name', 'last_name', 'phone',
         #           'address', 'state', 'city', 'method', 'status', 'amount')
-        fields = ('id', 'first_name', 'last_name', 'products',
+        fields = ('user', 'first_name', 'last_name', 'products',
                   'phone', 'address', 'state', 'city', 'method', 'status', 'amount')
 
 

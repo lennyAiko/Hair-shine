@@ -2,8 +2,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
-from ..serializers import CartSerializer, ProductItemSerializer, GetProductItemSerializer
-from ..models import Cart, ProductItem, Product
+from ..serializers import CartSerializer, GetCartSerializer
+from ..models import Cart, Product
 from ..utils import Actions
 from drf_spectacular.utils import extend_schema
 
@@ -18,7 +18,7 @@ def create(user):
     return query
 
 
-@extend_schema(request=CartSerializer, responses=CartSerializer)
+@extend_schema(request=CartSerializer, responses=GetCartSerializer)
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def create_get(req):
@@ -27,7 +27,7 @@ def create_get(req):
 
         query = create(req.user)
 
-        serializer = CartSerializer(query, many=False)
+        serializer = GetCartSerializer(query, many=False)
 
         data, status = serializer.data, 200
 
@@ -39,11 +39,12 @@ def create_get(req):
     if req.method == "POST":
 
         try:
-            query = Cart.objects.get(user=req.user)
+            query = create(req.user)
+            print(query)
             data, status = Actions.update(
                 CartSerializer, Cart, query.id, req.data)
         except:
-            req.data['user'] = req.user
+            req.data['user'] = req.user.id
             data, status = Actions.create(req.data, CartSerializer)
 
         data = {
@@ -80,11 +81,23 @@ def create_get(req):
 @permission_classes([IsAuthenticated])
 def empty_cart(req):
 
-    req.user.cart.product_item.all().delete()
+    cart = Cart.objects.get(user=req.user)
 
-    data = {
-        "status": 200,
-        "message": "Cart is empty"
-    }
+    print(cart)
+
+    try:
+
+        cart.delete()
+
+        data = {
+            "status": 200,
+            "message": "Cart is empty"
+        }
+
+    except:
+        data = {
+            "status": 500,
+            "message": "Something went wrong"
+        }
 
     return Response(data, 200)

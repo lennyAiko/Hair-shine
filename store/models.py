@@ -63,17 +63,6 @@ class SubCategory(models.Model):
         return self.category.name
 
 
-class Cart(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name='cart')
-    total_amount = models.IntegerField(default=0, blank=True, null=True)
-    date_added = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self) -> str:
-        return f"{self.user.email}'s cart"
-
-
 class Product(models.Model):
     name = models.CharField(max_length=150, unique=True)
     actual_price = models.IntegerField(default=0)
@@ -84,6 +73,8 @@ class Product(models.Model):
         SubCategory, related_name='product', on_delete=models.PROTECT, db_constraint=False)
     views = models.IntegerField(blank=True, null=True, default=0)
     product_img = models.ImageField(upload_to=upload_to, blank=True, null=True)
+    # cart = models.ForeignKey(
+    #     Cart, on_delete=models.CASCADE, related_name='product', blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -108,6 +99,18 @@ class Product(models.Model):
     # get comments
 
 
+class Cart(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='cart')
+    total_amount = models.IntegerField(default=0, blank=True, null=True)
+    products = models.ManyToManyField(Product, related_name="cart_products")
+    date_added = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.user.email}'s cart"
+
+
 class Comment(models.Model):
     commenter = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='comment')
@@ -129,18 +132,18 @@ class Comment(models.Model):
         return self.product.name
 
 
-class ProductItem(models.Model):
-    product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, related_name='product_item')
-    quantity = models.IntegerField()
-    amount = models.IntegerField(null=True, blank=True)
-    cart = models.ForeignKey(
-        Cart, on_delete=models.CASCADE, related_name='product_item')
-    date_added = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+# class ProductItem(models.Model):
+#     product = models.ForeignKey(
+#         Product, on_delete=models.CASCADE, related_name='product_item')
+#     quantity = models.IntegerField()
+#     amount = models.IntegerField(null=True, blank=True)
+#     cart = models.ForeignKey(
+#         Cart, on_delete=models.CASCADE, related_name='product_item')
+#     date_added = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self) -> str:
-        return f"{self.cart.user.email}'s product item - {self.product.name}"
+#     def __str__(self) -> str:
+#         return f"{self.cart.user.email}'s product item - {self.product.name}"
 
 
 class Favourite(models.Model):
